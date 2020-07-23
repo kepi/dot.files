@@ -1,0 +1,4 @@
+#+TITLE: Bash
+
+* Inspiration and examples
+- [[https://github.com/grettke/bash/blob/master/Provision.org][grettke's bash config]] :: nice literate approach, many features

@@ -1,0 +1,1 @@
+find . -type f -name '*.org' -exec emacs --batch -l org --eval '(org-babel-tangle-file "{}")' \;

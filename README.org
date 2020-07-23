@@ -1,0 +1,101 @@
+#+TITLE: Kepi's dot.files
+
+This is ongoing attempt to have /Literate dot.files/. In past, I tried multiple
+approaches to manage my /dot.files/, but none lived to its original promises.
+
+* So what is this?
+I'm fan of /Literate everything/ in last years mostly because of amazing /Org-mode/.
+Since I discovered [[http://www.howardism.org/Technical/Emacs/literate-devops.html][Literate DevOps]], I tend to use same approach to other parts
+of my work and hobbies.
+
+So, without much words, this is simply documentation of my configurations which
+you can easily [[https://orgmode.org/worg/org-contrib/babel/intro.html#literate-programming][tangle]] into actual configuration files. Its meant to be edited
+through /Org-mode/ documents, not directly in configuration files.
+
+* Motivation
+I used to have single /Linux/ computer at a time for more then decade. When I got
+new hardware, I simply synced old disk to new one and continued with my work.
+And so my /dot.files/ were safe.
+
+Now I got my hands on /Surface Go 2/ tablet and, of course, I want same config
+files there too.
+
+And because I /play/ with my config files a lot I need them always in sync.
+
+* Status
+This is really Work In Progress. I usually publish only finished (or at least
+partially finished) works. But I believe nobody would ever see this if I wait
+until I'm not ashamed of it :)
+
+I plan to put all my configuration files here in current state and add more
+documentation later (if ever).
+
+You'll probably encounter many /TODO/ notes - just ignore them, those are for me
+mostly.
+
+If you found something interesting and don't understand how it works, feel free
+to open issue with question in this repo - I may even find some time to reply.
+
+** Beware: Occasional occurrence of Czech lang
+As you already noticed, I'm not native English speaker. I'm trying to cleanup
+all Czech comments from my configs, but as mentioned above - WIP.
+
+* How to use this repo?
+I suppose it is usable mostly as inspiration how to manage configuration files
+and to check some interesting config options in various software.
+
+Config files are strongly affected by personal style. This repo probably wont
+work for you as it is - and its not intended to. Feel free to use it as
+inspiration, copy whatever you want or use same configuration as I'm :) Its up
+to you.
+
+* How to tangle documentation into config files
+Simply run =./bin/tangle= from this cloned repo.
+
+*Beware* tangle will simply overwrite all target files without asking, so double
+check first.
+
+Beware it will tangle files to [[https://www.chezmoi.io/docs/quick-start/][Chezmoi]] directory
+
+#+begin_src sh :shebang :tangle bin/tangle :tangle-mode (identity #o755) :mkdirp yes
+find . -type f -name '*.org' -exec emacs --batch -l org --eval '(org-babel-tangle-file "{}")' \;
+#+end_src
+
+** TODO tangle hook?
+It would be great to have git hook to tangle all files into subdirectory so I
+can consume it without emacs installed.
+
+* TODO Install apps
+I should be able to install used apps for every part (zsh, git, etc) from
+Pacman, AUR or manually. It would be great to add support for [[https://chocolatey.org/][Chocolatey]] later
+when occasionally on Windows.
+
+* TODO New device
+1. TODO sync this repo and tangle documents
+2. install chezmoi ~yup chezmoi~
+3. run ~chezmoi diff~ to check what will be applied
+4. run ~chezmoi apply~ if you want to proceed
+5. TODO install missing apps (if you want)
+
+* Where are those config files?
+Every =.org= file in this directory is config file for something.
+
+** TODO add index
+Maybe add index here
+
+* Links
+** Nice tools to automate dot.files management
+- [[https://www.chezmoi.io/docs/quick-start/][chezmoi]] :: seems great in most aspects, I'm considering to use it.
+- [[https://github.com/deadc0de6/dotdrop][dotdrop]] :: really similar to /chezmoi/ in features but differences in philosophy. I like that is is using jinja2 (used to it from ansible).
+
+** Approaches to dot.files management
+- [[https://github.com/ivoarch/.dot-org-files][ivoarch's dot.files]]
+- [[https://wiki.archlinux.org/index.php/Dotfiles][ArchWiki Dotfiles]]
+- [[https://medium.com/@mck.workman/how-to-manage-dotfiles-across-multiple-systems-698d3088288c][Dotfiles with bare git repo]]
+
+** Literate config approach with Org-mode
+- [[https://github.com/pniedzielski/dotfiles-ng][pniedzielksi's Dotfiles]] :: amazing example of literate configuration. Uses stow to sort configs to its places.
+- [[https://www.reddit.com/r/emacs/comments/4b713m/dotfile_management_and_documentation_with_orgmode/][Dotfile management and documentation with Org-Mode : emacs]]  :: nice tip about how to use /pass/ in comments.
+- [[https://github.com/mitchty/dotfiles/tree/master][GitHub - mitchty/dotfiles: My dotfile setup.]] :: org-mode examples and Makefile - have to go through it
+- [[https://github.com/dieggsy/dotfiles][GitHub - dieggsy/dotfiles: My dotfiles and some scripts]] :: another example with /Stow/, many configs, different structure.
+- [[https://writequit.org/org/][The Setup]] :: another example. =bin/tangle= script to get it all together. Also one to bootstrap needed packages on clean machine.
