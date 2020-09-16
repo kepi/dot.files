@@ -1,0 +1,37 @@
+#+TITLE: Rofi Launcher
+#+PROPERTY: header-args:conf :comments no :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/rofi/config.rasi
+
+* Install
+** Arch Linux
+#+begin_src conf :tangle etc/yupfiles/rofi.yup
+rofi latest noaur
+rofi-calc latest noaur
+#+end_src
+
+** TODO Add theme to chezmoi
+I need to find some easy way how to download files to chezmoi to install later.
+
+#+begin_src sh
+mkdir -p ~/.local/share/chezmoi/dot_local/share/rofi/themes/
+curl --silent https://gitlab.com/0xdec/base16-rofi/-/raw/master/themes/base16-solarized-dark.rasi > ~/.local/share/chezmoi/dot_local/share/rofi/themes/base16-solarized-dark.rasi
+#+end_src
+
+#+RESULTS:
+
+* Rasi Config
+I'm using Wayland version of Rofi which is based on Rofi#next - so preferred is
+to have config n /rasi/ format now.
+
+#+begin_src conf
+configuration {
+  modi: "run,drun,ssh,keys,calc";
+  show-icons: true;
+  terminal: "/usr/bin/termite";
+  ssh-command: "{terminal} -e "sshr {host}"";
+  sort: true;
+  parse-hosts: false;
+  parse-known-hosts: true;
+  m: "-4";
+  theme: "base16-solarized-dark.rasi";
+}
+#+end_src
