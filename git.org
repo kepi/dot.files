@@ -1,0 +1,65 @@
+#+TITLE: Git
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/dot_gitconfig.tmpl
+
+#+begin_src conf
+[user]
+	name = {{ .name }}
+	email = {{ .email }}
+  signingkey = {{ .gpg }}
+
+[color]
+  ui = auto
+  diff = auto
+  status = auto
+  branch = auto
+  interactive = auto
+
+[alias]
+  st = status
+  di = diff
+  co = checkout
+  ci = commit
+  br = branch
+  cp = cherry-pick
+  sta = stash
+  hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+  type = cat-file -t
+  dump = cat-file -p
+
+	g = grep --break --heading --line-number
+
+  edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+  add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+  add-modified = "!f() { git ls-files --modified | cut -f2 | sort -u ; }; git add `f`"
+  delete-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git rm `f`"
+  delete-deleted = "!f() { git ls-files --deleted | cut -f2 | sort -u ; }; git rm `f`"
+
+[grep]
+	extendedRegexp = true
+	lineNumber = true
+
+[format]
+  subjectprefix = PATCH
+  suffix = .patch
+  numbered = auto
+
+[merge]
+  tool = meld
+
+[diff "odf"]
+  textconv=odt2txt
+
+#[core]
+#  autocrlf = true
+
+[push]
+	default = simple
+
+[branch]
+  autosetuprebase = always
+
+[dpm]
+	pristineTarCommit = true
+[fetch]
+	prune = true
+#+end_src
