@@ -1,0 +1,354 @@
+#+TITLE: Sway
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/sway/config
+
+* Install
+** Arch Linux
+#+begin_src conf :tangle etc/yupfiles/sway.yup
+sway latest noaur
+swaylock latest noaur
+swayidle latest noaur
+waybar latest noaur
+i3status-rust-git latest aur
+#+end_src
+
+* Startup script
+#+begin_src conf :tangle ~/.local/share/chezmoi/bin/sway
+#!/bin/sh
+
+sway
+#+end_src 
+* Config
+** Sway
+#+begin_src conf
+# sway config file (v4)
+
+set $mod Mod4
+
+# pojmenování ploch
+set $1 "1: web"
+set $2 "2: term"
+set $3 "3: mail"
+set $4 "4: emacs"
+set $5 "5: ansible"
+set $6 "6: misc"
+set $7 "7: misc"
+set $8 "8: chrome"
+set $9 "9: ff"
+set $0 "0: fs"
+
+exec --no-startup-id nitrogen --restore
+exec --no-startup-id ~/bin/sway.autostart
+
+# turn of screen blanking
+exec --no-startup-id xset s off
+
+default_border none
+hide_edge_borders smart
+# workspace_auto_back_and_forth yes
+
+gaps inner 4
+gaps outer -4
+# asi fakci jen ve sway
+smart_gaps on
+
+### Assigns
+assign [class="^Riot$"] → jabber
+assign [class="^Firefox$"] → $9
+for_window [class="^Qalculate"] floating enable
+assign [title="Dýchánkový board"] → kanban
+assign [title="query_id=255"] → kanban
+
+# autostarts
+exec --no-startup-id riot-web
+# exec safeeyes
+
+### Variables
+#
+# Logo key. Use Mod1 for Alt.
+    
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+# Your preferred terminal emulator
+#set $term urxvt
+set $term termite
+# Your preferred application launcher
+# Note: it's recommended that you pass the final command to sway
+#set $menu dmenu_path | dmenu | xargs swaymsg exec
+#set $menu rofi -combi-modi run,drun -show combi -modi combi -show-icons -combi-hide-mode-prefix
+# set $switchws ~/bin/sway-switch-workspace
+
+# jump to urgent window
+bindsym $mod+x [urgent=latest] focus
+
+#set $pass gopass ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | xdotool type --delay 20 --clearmodifiers --file -
+set $pass gopass ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | xdotool type --delay 20 --file -
+bindsym $mod+p exec --no-startup-id $pass
+
+#set $passu gopass ls --flat | rofi -dmenu -p 'User for:' | xargs -I {} --no-run-if-empty gopass show "{}" user | xdotool type --delay 20 --clearmodifiers --file -
+set $passu gopass ls --flat | rofi -dmenu -p 'User for:' | xargs -I {} --no-run-if-empty gopass show "{}" user | xdotool type --delay 20 --file -
+bindsym $mod+u exec --no-startup-id $passu
+
+set $otp gopass ls --flat otp | rofi -dmenu -p 'OTP for:' | xargs --no-run-if-empty gopass otp | sed 's/ .*//' | xdotool type --clearmodifiers --file -
+bindsym $mod+o exec --no-startup-id $otp
+
+set $multiline ~/bin/xdo_multiple_lines
+bindsym $mod+Shift+m exec --no-startup-id $multiline
+
+
+set $menu2 rofi -show drun -show-icons
+bindsym $mod+Shift+d exec $menu2
+
+set $menu "PATH=$PATH:~/bin rofi -combi-modi drun,run -show combi -modi combi -show-icons -combi-hide-mode-prefix true"
+
+set $ssh rofi -show ssh
+bindsym $mod+s exec $ssh
+
+# pozor nemůžu použít za xargs $switchws z tohoto configu protože by se to bralo jako shellová proměnná
+# bylo by dobré přijít na to jak to dělat
+# set $workspaces_switch swaymsg -t get_workspaces | jq '.[] | .name' | sed 's/"//g' | rofi -dmenu -p 'Workspace:' | xargs -r ~/bin/sway-switch-workspace
+# bindsym $mod+i exec --no-startup-id $workspaces_switch
+
+
+bindsym $mod+f exec --no-startup-id "rofi -show window"
+
+set $lock_bg ~/lockscreen.png
+output "*" bg $lock_bg fill
+
+### Idle configuration
+exec swayidle -w \
+         timeout 300 'swaylock -f -c 000000 -i $lock_bg' \
+         timeout 600 'swaymsg "output * dpms off"' \
+              resume 'swaymsg "output * dpms on"' \
+         before-sleep 'swaylock -f -c 000000 -i $lock_bg'
+        
+set $lock swaylock -i $lock_bg
+bindsym --release Print exec $lock
+        
+### Key bindings
+#
+# Basics:
+#
+# start a terminal
+bindsym $mod+Shift+Return exec $term
+
+# kill focused window
+bindsym $mod+Shift+c kill
+
+# start your launcher
+bindsym $mod+d exec $menu
+
+# Drag floating windows by holding down $mod and left mouse button.
+# Resize them with right mouse button + $mod.
+# Despite the name, also works for non-floating windows.
+# Change normal to inverse to use left mouse button for resizing and right
+# mouse button for dragging.
+floating_modifier $mod
+
+# reload the configuration file
+bindsym $mod+Shift+r reload
+
+# exit sway (logs you out of your Wayland session)
+bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+#
+# Moving around:
+#
+# Move your focus around
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+# or use $mod+[up|down|left|right]
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# _move_ the focused window with the same, but add Shift
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+# ditto, with arrow keys
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+#
+# Moving around screens
+#
+bindsym $mod+a focus output left
+bindsym $mod+semicolon focus output right
+
+# Pro US klávesnici - navíc to tady musím nechat i kvůli tomu,
+# aby se správně pojmenovaly plochy protože i3wm je
+# pojmenovává dle bindsym viz https://github.com/i3/i3/issues/1414
+
+# bindsym $mod+Alt+Shift+1 workspace $1
+# bindsym $mod+Alt+Shift+2 workspace $2
+# bindsym $mod+Alt+Shift+3 workspace $3
+# bindsym $mod+Alt+Shift+4 workspace $4
+# bindsym $mod+Alt+Shift+5 workspace $5
+# bindsym $mod+Alt+Shift+6 workspace $6
+# bindsym $mod+Alt+Shift+7 workspace $7
+# bindsym $mod+Alt+Shift+8 workspace $8
+# bindsym $mod+Alt+Shift+9 workspace $9
+# bindsym $mod+Alt+Shift+0 workspace $0
+
+# bindsym $mod+1 exec --no-startup-id $switchws $1
+# bindsym $mod+2 exec --no-startup-id $switchws $2
+# bindsym $mod+3 exec --no-startup-id $switchws $3
+# bindsym $mod+4 exec --no-startup-id $switchws $4
+# bindsym $mod+5 exec --no-startup-id $switchws $5
+# bindsym $mod+6 exec --no-startup-id $switchws $6
+# bindsym $mod+7 exec --no-startup-id $switchws $7
+# bindsym $mod+8 exec --no-startup-id $switchws $8
+# bindsym $mod+9 exec --no-startup-id $switchws $9
+# bindsym $mod+0 exec --no-startup-id $switchws $0
+
+# # move focused container to workspace
+# bindsym $mod+Shift+1 move container to workspace $1
+# bindsym $mod+Shift+2 move container to workspace $2
+# bindsym $mod+Shift+3 move container to workspace $3
+# bindsym $mod+Shift+4 move container to workspace $4
+# bindsym $mod+Shift+5 move container to workspace $5
+# bindsym $mod+Shift+6 move container to workspace $6
+# bindsym $mod+Shift+7 move container to workspace $7
+# bindsym $mod+Shift+8 move container to workspace $8
+# bindsym $mod+Shift+9 move container to workspace $9
+# bindsym $mod+Shift+0 move container to workspace $0
+
+# # Česká verze
+# bindsym $mod+uring exec --no-startup-id $switchws $1
+# bindsym $mod+ecaron exec --no-startup-id $switchws $2
+# bindsym $mod+scaron exec --no-startup-id $switchws $3
+# bindsym $mod+ccaron exec --no-startup-id $switchws $4
+# bindsym $mod+rcaron exec --no-startup-id $switchws $5
+# bindsym $mod+zcaron exec --no-startup-id $switchws $6
+# bindsym $mod+yacute exec --no-startup-id $switchws $7
+# bindsym $mod+aacute exec --no-startup-id $switchws $8
+# bindsym $mod+iacute exec --no-startup-id $switchws $9
+# bindsym $mod+eacute exec --no-startup-id $switchws $0
+
+# # move focused container to workspace
+# bindsym $mod+Shift+uring move container to workspace $1
+# bindsym $mod+Shift+ecaron move container to workspace $2
+# bindsym $mod+Shift+scaron move container to workspace $3
+# bindsym $mod+Shift+ccaron move container to workspace $4
+# bindsym $mod+Shift+rcaron move container to workspace $5
+# bindsym $mod+Shift+zcaron move container to workspace $6
+# bindsym $mod+Shift+yacute move container to workspace $7
+# bindsym $mod+Shift+aacute move container to workspace $8
+# bindsym $mod+Shift+iacute move container to workspace $9
+# bindsym $mod+Shift+eacute move container to workspace $0
+
+#
+# Layout stuff:
+#
+workspace_layout tabbed
+# You can "split" the current object of your focus with
+# $mod+b or $mod+v, for horizontal and vertical splits
+# respectively.
+bindsym $mod+b splith
+bindsym $mod+v splitv
+
+# Switch the current container between different layout styles
+bindsym $mod+Shift+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# Make the current focus fullscreen
+bindsym $mod+shift+f fullscreen
+
+# Toggle the current focus between tiling and floating mode
+bindsym $mod+t floating toggle
+bindsym $mod+Shift+t focus mode_toggle
+
+# Swap focus between the tiling area and the floating area
+# bindsym $mod+space focus mode_toggle
+bindsym --release $mod+space layout toggle split tabbed
+
+# move focus to the parent container
+# bindsym $mod+a focus parent
+#
+# Scratchpad:
+#
+# Sway has a "scratchpad", which is a bag of holding for windows.
+# You can send windows there and get them back later.
+
+# Move the currently focused window to the scratchpad
+bindsym $mod+Shift+minus move scratchpad
+
+# Show the next scratchpad window or hide the focused scratchpad window.
+# If there are multiple scratchpad windows, this command cycles through them.
+bindsym $mod+minus scratchpad show
+#
+# Resizing containers:
+#
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    # ditto, with arrow keys
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    # return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+# Colors
+
+# class                 border    backgr    text    indicator child_border
+client.focused          #00000022 #98fb98aa #ffffff #32cd32   #2e8b57
+client.focused_inactive #00000022 #285577aa #ffffff #2e9ef4   #285577
+client.unfocused        #00000022 #222222aa #888888 #292d2e   #222222
+client.urgent           #00000022 #900000aa #ffffff #900000   #900000
+client.placeholder      #00000022 #0c0c0caa #ffffff #000000   #0c0c0c
+
+client.background       #ffffff
+
+#
+# Status Bar:
+#
+font pango: Terminus 9
+bar {
+    position top
+
+    status_command /usr/bin/i3status-rs ~/.config/i3/status.toml
+
+    tray_output primary
+    tray_padding 2
+
+    font pango: Terminus 8
+    colors {
+        separator #666666
+        background #222222
+        statusline #dddddd
+
+        focused_workspace #0088CC #0088CC #ffffff
+        active_workspace #333333 #333333 #ffffff
+        inactive_workspace #333333 #333333 #888888
+        urgent_workspace #2f343a #900000 #ffffff
+    }
+}
+
+set $workspaces_send "swaymsg -t get_workspaces | jq '.[] | .name' | sed 's/\\"//g' | rofi -dmenu -p 'Workspace:' | xargs -I {} swaymsg 'move container to workspace {}; workspace {}'"
+bindsym $mod+Shift+i exec --no-startup-id $workspaces_send
+#+end_src
+* TODO Add touch controls
+For surface, I need something like [[https://peterme.net/adding-touch-controls-to-the-i3-window-manager.html][Welcome to Peter's DevLog - Adding touch controls to the i3 Window Manager]]
