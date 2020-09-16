@@ -1,0 +1,13 @@
+#+TITLE: Keyboard
+
+I'm using [[https://github.com/kepi/cus_klaveska][ČUS Kláveska]] as may keyboard layout. Setting is done through =localectl=
+in Arch it seems, so no config file?
+
+#+begin_src sh
+sudo localectl set-keymap cus_klaveska ralt_switch,terminate:ctrl_alt_bksp,grp_led:scroll,ctrl:nocaps
+sudo localectl set-x11-keymap cus_klaveska ralt_switch,terminate:ctrl_alt_bksp,grp_led:scroll,ctrl:nocaps
+#+end_src
+
+* TODO Move this to Ansible
+As this need to be done manually now, it would be better to install my keyboard
+and set it up from Ansible.
