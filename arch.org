@@ -1,0 +1,83 @@
+#+TITLE: Arch Linux
+#+PROPERTY: header-args:yaml :mkdirp yes :tangle ansible/arch.yml :tangle_preserver
+
+System-wide settings can't be easily handled with Chezmoi. And more importantly,
+we don't need only config files but other tasks too. Ansible is just the tool
+for the job.
+
+* Running
+** On localhost
+#+begin_src sh
+ansible-playbook -c local -i localhost, ansible/arch.yml
+#+end_src
+
+** On different system
+I.e. when preparing new laptop sitting at 192.168.1.123 (you must be able to SSH
+and use sudo there):
+
+#+begin_src sh
+ansible-playbook -i 192.168.1.123, ansible/arch.yml
+#+end_src
+
+For more options (different user, no sudo etc just check [[https://docs.ansible.com/ansible/latest/user_guide/playbooks.html][Working With Playbooks
+— Ansible Documentation]]).
+
+** On localhost and multiple systems
+I want to setup all my machines at once, so I just added my SSH key even to
+local machine and calling Ansible like this:
+
+#+begin_src sh :results drawer :export both
+ansible-playbook -i localhost,midget, ansible/arch.yml
+#+end_src
+
+#+RESULTS:
+:results:
+
+PLAY [Setup Arch Linux my way] *************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [midget]
+ok: [localhost]
+
+TASK [Ban after 10 failed attempts] ********************************************
+ok: [localhost]
+ok: [midget]
+
+TASK [Ban for 5 minutes only] **************************************************
+ok: [localhost]
+ok: [midget]
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+midget                     : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+:end:
+
+* Arch Playbook start
+#+begin_src yaml
+- name: Setup Arch Linux my way
+  hosts: all
+  become: yes
+  
+  tasks:
+#+end_src
+
+* Faillock - banning after failed logins
+For me its pretty uncomfortable to be locked out after 3 failed logins for 10
+minutes, which is Arch's default these days. But, its not completely stupid to
+limit the attempts.
+
+#+begin_src yaml
+# indent hack
+    - name: Ban after 10 failed attempts
+      lineinfile:
+        path: /etc/security/faillock.conf
+        regexp: "^#? *deny *="
+        line: "deny = 10"
+
+    - name: Ban for 5 minutes only
+      lineinfile:
+        path: /etc/security/faillock.conf
+        regexp: "^#? *unlock_time *="
+        line: "unlock_time = 300"
+#+end_src

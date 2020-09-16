@@ -1,0 +1,55 @@
+#+TITLE: Bootstrap Arch Linux
+#+PROPERTY: header-args:sh :comments link :tangle-mode (identity #o755) :mkdirp yes :tangle bin/bootstrap_arch :shebang
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes
+
+Install packages I'm using on /Arch Linux/.
+
+This is just quick script to get what I need until I find some better way. I was
+considering /Ansible/, but it seems too heavy, especially when there are no native
+AUR modules.
+
+Worst is this isn't idempotent yet.
+
+* TODO Convert to Ansible?
+Looks like I'll be moving to Ansible anyway. And maybe find something cleaner
+then yupfiles to install things.
+
+* Prerequisities
+#+begin_src sh :tangle no
+sudo pacman -S base-devel git rsync
+#+end_src
+
+* Install termite terminfo entry
+#+begin_src sh
+[ -f /usr/share/terminfo/t/termite ] || (cd /tmp && wget -q https://raw.githubusercontent.com/thestinger/termite/master/termite.terminfo && tic -x termite.terminfo; /bin/rm termite.terminfo)
+#+end_src
+
+* Install Yup
+I'm using [[https://github.com/ericm/yup][Yup]] to install packages on Arch.
+
+#+begin_src sh
+if [ ! $(which yup) ]; then
+  cd /tmp
+  git clone https://aur.archlinux.org/yup-bin.git
+  cd yup-bin
+  makepkg -si
+fi  
+#+end_src
+
+* Yupfile
+No when /Yup/ is installed I can install software from /Yupfiles/.
+
+I'll try to create one /Yupfile/ for every configuration which need to install
+something in =etc/yupfiles/xxx.yup= and then install from there.
+
+#+begin_src sh
+cat etc/yupfiles/*.yup | sed 's/#.*$//;/^$/d' > etc/yupfile
+yup -Y etc/yupfile
+#+end_src
+
+** Chezmoi
+#+begin_src conf :tangle etc/yupfiles/chezmoi.yup
+chezmoi latest noaur
+#+end_src
+
+
