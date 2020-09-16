@@ -14,8 +14,12 @@ But it can be easily fixed with
 Or if you are missing =tic= (i.e. on openwrt), just create =/usr/share/terminfo/x=
 directory there and copy =/usr/share/terminfo/x/xterm-termite= from your system.
 
-* Dependencies
-- aur/nerd-fonts-inconsolata-go
+* Install
+** Arch Linux
+#+begin_src conf :tangle etc/yupfiles/termite.yup
+termite latest noaur
+nerd-fonts-inconsolata-go latest aur
+#+end_src
 
 * Options
 Only changed font to /InconsolataGo/ (patched with /Nerd/) and infinite scrollback
