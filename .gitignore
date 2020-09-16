@@ -1,0 +1,4 @@
+ansible/*
+.#*
+bin/bootstrap_arch
+etc/yupfiles/*
