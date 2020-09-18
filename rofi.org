@@ -19,9 +19,8 @@ curl --silent https://gitlab.com/0xdec/base16-rofi/-/raw/master/themes/base16-so
 #+RESULTS:
 
 * Rasi Config
-I'm using Wayland version of Rofi which is based on Rofi#next - so preferred is
-to have config n /rasi/ format now.
-
+I'm using Wayland version of Rofi which is based on Rofi#next with new /rasi/
+config format.
 #+begin_src conf
 configuration {
   modi: "run,drun,ssh,keys,calc";
@@ -35,3 +34,31 @@ configuration {
   theme: "base16-solarized-dark.rasi";
 }
 #+end_src
+
+=sshr= is my custom script for /SSH to root/. It simply connects to server over /SSH/
+and join to predefined /tmux/ session under root or create new one if there is
+none.
+
+#+begin_src sh :tangle ~/.local/share/chezmoi/bin/executable_sshr.tmpl :mkdirp yes :shebang #!/bin/bash
+readonly SESSION="${USER}"
+readonly SCRIPT_NAME=$(basename "$0")
+readonly SSH_HOST="$1"
+readonly SOCKET_NAME="{{ .sshr_socket_name }}"
+
+TMUX="tmux -L '${SOCKET_NAME}'"
+
+if [[ "$SCRIPT_NAME" == "sshr" ]]; then
+    TMUX="sudo -i $TMUX"
+fi
+
+ssh "${SSH_HOST}" -t "$TMUX at -t '${SESSION}' || $TMUX new-session -s '${SESSION}'"
+# FIXME: when I'll have tmux 1.8+ everywhere, switch to:
+#ssh "${SSH_HOST}" -t "$TMUX new-session -A -s '${SESSION}'"
+#+end_src
+
+And you can also create symlink from =sshr= to i.e. =sshu= to use without /sudo/.
+
+#+begin_src conf :tangle ~/.local/share/chezmoi/bin/symlink_sshu.tmpl :mkdirp yes
+sshr
+#+end_src
+
