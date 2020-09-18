@@ -11,12 +11,6 @@ waybar latest noaur
 i3status-rust-git latest aur
 #+end_src
 
-* Startup script
-#+begin_src conf :tangle ~/.local/share/chezmoi/bin/sway
-#!/bin/sh
-
-sway
-#+end_src 
 * Config
 ** Sway
 #+begin_src conf
