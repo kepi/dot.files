@@ -40,6 +40,10 @@ to open issue with question in this repo - I may even find some time to reply.
 As you already noticed, I'm not native English speaker. I'm trying to cleanup
 all Czech comments from my configs, but as mentioned above - WIP.
 
+Btw. if you found this repo useful and are native English speaker, I'll gladly
+accept donations in form of grammar/style/English /Pull Requests/ ;) I may as well
+learn something and improve.
+
 * How to use this repo?
 I suppose it is usable mostly as inspiration how to manage configuration files
 and to check some interesting config options in various software.
