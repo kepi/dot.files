@@ -1,0 +1,35 @@
+#+TITLE: Syncthing
+
+Amazing, open and decentralized tool to synchronize your devices.
+
+Beware, as it is decentralized, you need synced devices online in same time
+window. Or add another device which is always online (aka server) to the mix.
+
+* Install
+** Arch Linux
+#+begin_src conf :tangle etc/yupfiles/syncthing.yup
+syncthing latest noaur
+#+end_src
+
+* First start configuration
+First we have to set autostart for /Syncthing/. It's probably best to use systemd
+user service these days.
+
+#+begin_src sh
+systemctl --user enable syncthing
+systemctl --user start syncthing
+#+end_src
+
+After that, just point your browser to http://localhost:8384 and it will guide
+you through settings.
+
+** Setting user and password
+It's really important to set user login and password for GUI. In browser go to
+/settings/ and then to /GUI/ tab as without it, every other user (or program) on
+your computer can access /Syncthing/ settings.
+
+* Using
+Just set everything at http://localhost:8384 and you are done.
+
+Personally, I'm using it i.e. to sync photos from my android phone with
+[[https://f-droid.org/en/packages/com.nutomic.syncthingandroid/][syncthingandroid]].
