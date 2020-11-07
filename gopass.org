@@ -1,0 +1,36 @@
+#+TITLE: Gopass or pass
+#+PROPERTY: header-args:conf :comments no :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/gopass/config.yml.tmpl
+
+/Password store/ and it's alternative /Gopass/ are nice cmdline password managers.
+
+I'm mostly using /Gopass/ as it makes it easier to share some password stores in
+teams and provide some other goodies. Unfortunately I'm not sure if it will be
+viable solution for future, as /Gopass/ team decided to focus on core features.
+And are slowly removing exactly those futures which made me to chose it in the
+first place (as i.e. YAML metadata for every password).
+
+* Install
+** Arch Linux
+#+begin_src conf :tangle etc/yupfiles/gopass.yup
+gopass latest noaur
+#+end_src
+
+* Configuration 
+#+begin_src conf
+autoclip: false
+autoimport: true
+cliptimeout: 45
+exportkeys: false
+mime: false
+nocolor: false
+nopager: false
+notifications: false
+path: {{ .chezmoi.homedir }}/.password-store
+safecontent: true
+{{- if (index . "pass") }}
+mounts:
+  {{- range $mount, $dir := .pass.mounts }}
+  {{ $mount }}: {{ $dir }}
+  {{- end }}
+{{- end }}
+#+end_src
