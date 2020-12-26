@@ -1229,7 +1229,62 @@ c.editor.command = ['em', '+{line}', '{file}']
 ## CSS selectors used to determine which elements on a page should have
 ## hints.
 ## Type: Dict
-# c.hints.selectors = {'all': ['a', 'area', 'textarea', 'select', 'input:not([type="hidden"])', 'button', 'frame', 'iframe', 'img', 'link', 'summary', '[onclick]', '[onmousedown]', '[role="link"]', '[role="option"]', '[role="button"]', '[ng-click]', '[ngClick]', '[data-ng-click]', '[x-ng-click]', '[tabindex]'], 'links': ['a[href]', 'area[href]', 'link[href]', '[role="link"][href]'], 'images': ['img'], 'media': ['audio', 'img', 'video'], 'url': ['[src]', '[href]'], 'inputs': ['input[type="text"]', 'input[type="date"]', 'input[type="datetime-local"]', 'input[type="email"]', 'input[type="month"]', 'input[type="number"]', 'input[type="password"]', 'input[type="search"]', 'input[type="tel"]', 'input[type="time"]', 'input[type="url"]', 'input[type="week"]', 'input:not([type])', 'textarea']}
+c.hints.selectors = {
+    "all": [
+        "a",
+        "area",
+        "textarea",
+        "select",
+        'input:not([type="hidden"])',
+        "button",
+        "frame",
+        "iframe",
+        "img",
+        "link",
+        "summary",
+        "[onclick]",
+        "[onmousedown]",
+        '[role="link"]',
+        '[role="option"]',
+        '[role="button"]',
+        "[ng-click]",
+        "[ngClick]",
+        "[data-ng-click]",
+        "[x-ng-click]",
+        "[tabindex]",
+    ],
+    "links": ["a[href]", "area[href]", "link[href]", '[role="link"][href]'],
+    "images": ["img"],
+    "media": ["audio", "img", "video"],
+    "url": ["[src]", "[href]"],
+    "inputs": [
+        'input[type="text"]',
+        'input[type="date"]',
+        'input[type="datetime-local"]',
+        'input[type="email"]',
+        'input[type="month"]',
+        'input[type="number"]',
+        'input[type="password"]',
+        'input[type="search"]',
+        'input[type="tel"]',
+        'input[type="time"]',
+        'input[type="url"]',
+        'input[type="week"]',
+        "input:not([type])",
+        "textarea",
+    ],
+    "tickets": [
+        '.subject a[href*="/issues/1"]',
+        '.subject a[href*="/issues/2"]',
+        '.subject a[href*="/issues/3"]',
+        '.subject a[href*="/issues/4"]',
+        '.subject a[href*="/issues/5"]',
+        '.subject a[href*="/issues/6"]',
+        '.subject a[href*="/issues/7"]',
+        '.subject a[href*="/issues/8"]',
+        '.subject a[href*="/issues/9"]',
+    ],
+}
 
 ## Make characters in hint strings uppercase.
 ## Type: Bool
@@ -1872,6 +1927,7 @@ config.bind(",c", "spawn --userscript org-store-link")
 config.bind(";c", "hint links userscript org-store-link")
 config.bind(",w", "spawn --userscript org-capture-web")
 config.bind(";w", "hint links userscript org-capture-web")
+config.bind(";T", "hint --rapid tickets tab")
                   
 config.bind("<Alt-H>", "tree-tab-promote")
 config.bind("<Alt-J>", "tab-next")
@@ -2186,6 +2242,21 @@ config.bind('<Ctrl-K>', 'completion-item-focus prev', mode='command')
 # config.bind('n', 'prompt-accept no', mode='yesno')
 # config.bind('y', 'prompt-accept yes', mode='yesno')
 #+end_src
+
+** Per-domain settings
+In Qutebrowser you can made specific settings available only on specific
+domains.
+
+*** My Home controls
+I need to ignore =c= and =e= keys so I can pass-them through to Lovelace:
+
+Waiting for https://github.com/qutebrowser/qutebrowser/issues/3636
+
+# #+begin_src python
+# with config.pattern('*://holly.reddwarf') as p:
+#     p.unbind('e')
+#     p.unbind('c')
+# #+end_src
 
 * Ideas
 ** TODO qurlshare
