@@ -14,42 +14,58 @@ xcape latest noaur
 pulseaudio latest aur
 pulseaudio-bluetooth latest aur
 pulseaudio-zeroconf latest aur
+jq latest noaur
 #+end_src
 
 * TODO Screen lock
 ** Arrange screenlock wallpapers for multimonitor
 #+begin_src sh :tangle ~/.local/share/chezmoi/bin/executable_setlockbg :mkdirp yes :shebang #!/bin/bash
 BG_SAVED=~/.config/nitrogen/bg-saved.cfg
-LOCK_BG=~/tmpfs/lock.$(xrandr --listactivemonitors | md5sum | awk '{ print $1 }').png
+CACHE_DIR=~/.cache/lockbg
+LOCK_BG=${CACHE_DIR}/lock.$(xrandr --listactivemonitors | md5sum | cut -f1 -d" ").rgb
+CURRENT_LOCK_BG=${CACHE_DIR}/lock.rgb
+
+if [[ -f "$LOCK_BG" ]] && [[ "$1" != "force" ]]; then
+    ln -s -f "$LOCK_BG" "$CURRENT_LOCK_BG"
+    exit 0
+fi
+
+CONVERT=convert
+which gm > /dev/null && CONVERT="gm convert"
+
+mkdir -p "$CACHE_DIR"
 
 BGS=""
 while read -r monitor res; do
-    bgfile=$(awk -F= -v pattern="[xin_${monitor}]" 'BEGIN { found=0; }; $0 == pattern { found=1 }; /^file=/ && found==1 { print $2; found=0; }' $BG_SAVED)
-    bgres=$(identify -format '%wx%h' ${bgfile})
+    bgfile_orig=$(awk -F= -v pattern="[xin_${monitor}]" 'BEGIN { found=0; }; $0 == pattern { found=1 }; /^file=/ && found==1 { print $2; found=0; }' $BG_SAVED)
+    bgres=$(identify -format '%wx%h' "${bgfile_orig}")
 
-    if [[ "$res" == "$bgres" ]]; then
-        BGS="${BGS} ${bgfile}"
-    else
-        BGS="${BGS} \( ${bgfile} -resize ${res} \)"
+    bgfile="${CACHE_DIR}/$(echo "$bgfile_orig" | md5sum | cut -f1 -d" ").pnm"
+
+    if [ ! -f "$bgfile" ]; then
+        resize=""
+        [ "$res" == "$bgres" ] || resize="-resize ${res}"
+        echo $CONVERT $resize "'$bgfile_orig'" "'$bgfile'"
+        eval $CONVERT $resize "'$bgfile_orig'" "'$bgfile'"
     fi
-
+    BGS="${BGS} '${bgfile}'"
 done <<< $(xrandr --current --listactivemonitors | tail -n +2 | sort -t+ -k3 | sed 's/[:/x+]/ /g' | awk '{ print $1 " " $3"x"$5 }')
 
-echo convert -background black $BGS +append "${LOCK_BG}"
-eval convert -background black $BGS +append "${LOCK_BG}"
+echo $CONVERT -background black $BGS +append RGB:"- > ${LOCK_BG}"
+eval $CONVERT -background black $BGS +append RGB:- > "${LOCK_BG}"
+ln -s -f "$LOCK_BG" "$CURRENT_LOCK_BG"
 #+end_src
 
 ** Lock script
 Lock screen with wallpaper.
 
 #+begin_src sh :tangle ~/.local/share/chezmoi/bin/executable_lock :mkdirp yes :shebang #!/bin/sh
-LOCK_BG=~/tmpfs/lock.$(xrandr --listactivemonitors | md5sum | awk '{ print $1 }').png
-ALT_BG=~/.config/wallpaper.png
+readonly LOCK_BG=~/.cache/lockbg/lock.rgb
+readonly BG_RES=$(xrandr --current | head -n1 | sed -r 's/^.*current ([0-9]+) x ([0-9]+),.*/\1x\2/')
+~/bin/setlockbg
 
-[[ -f "$LOCK_BG" ]] || ~/bin/setlockbg
-[[ -f "$LOCK_BG" ]] || LOCK_BG=$ALT_BG
-
-i3lock -i $LOCK_BG
+echo i3lock --ignore-empty-password --raw "${BG_RES}:rgb" --image "$LOCK_BG"
+i3lock --ignore-empty-password --raw "${BG_RES}:rgb" --image "$LOCK_BG"
 #+end_src
 
 ** TODO Fix lock bg system
@@ -75,7 +91,7 @@ ExecStart=/usr/bin/xss-lock -l -- ${HOME}/bin/lock
 WantedBy=graphical-session.target
 #+end_src
 
-* TODO Xinitrc 
+* TODO Xinitrc
 I'm starting X from =xinitrc=
 
 Better documentation and split needed and probably move the stuff specific for
@@ -99,7 +115,7 @@ if [ -f "$userresources" ]; then
 fi
 
 /etc/X11/xinit/xinitrc.d/50-systemd-user.sh
-  
+
 setxkbmap cus_klaveska -option ralt_switch,terminate:ctrl_alt_bksp,grp_led:scroll,ctrl:nocaps && xcape -e 'Control_L=Escape'
 
 exec i3
@@ -164,7 +180,7 @@ exec --no-startup-id riot-web
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
-    
+
 # Home row direction keys, like vim
 set $left h
 set $down j
@@ -490,7 +506,7 @@ device = "{{ .battery_device }}"
 
 # [[block]]
 # block = "sound"
-# driver = "pulseaudio"      
+# driver = "pulseaudio"
 
 [[block]]
 block = "time"
@@ -528,4 +544,23 @@ clickable = true
 interval = 5
 warning_mem = 80
 critical_mem = 95
+#+end_src
+
+** Support scripts
+#+begin_src conf :tangle ~/.local/share/chezmoi/bin/executable_i3-switch-workspace :mkdirp yes :shebang #!/bin/bash
+which jq || notify-send --urgency=critical "jq not installed"
+
+readonly WORKSPACE_WANTED=$1
+readonly OUTPUT_ACTIVE=$(i3-msg -t get_workspaces | jq '.[] | select(.focused==true) | .output')
+readonly OUTPUT_WORKSPACE=$(i3-msg -t get_workspaces | jq --arg NAME "$WORKSPACE_WANTED" '.[] | select(.name==$NAME) | select(.visible==true) | .output')
+
+PRE=""
+[[ -n "$OUTPUT_WORKSPACE" ]] && PRE="move workspace to output ${OUTPUT_WORKSPACE};"
+
+i3-msg "${PRE}workspace ${WORKSPACE_WANTED}; move workspace to output ${OUTPUT_ACTIVE}"
+sleep 0.1
+i3-msg "focus output ${OUTPUT_ACTIVE}"
+
+# problém s empty workspacama
+# https://sainathadapa.github.io/blog/i3-empty-workspace-workaround/
 #+end_src
