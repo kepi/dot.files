@@ -4,7 +4,7 @@
 * Install
 ** Arch Linux
 #+begin_src conf :tangle etc/yupfiles/rofi.yup
-rofi latest noaur
+rofi-lbonn-wayland-git latest aur
 rofi-calc latest noaur
 #+end_src
 
