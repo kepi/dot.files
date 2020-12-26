@@ -1,1 +1,10 @@
-find . -type f -name '*.org' -exec emacs --batch -l org --eval '(org-babel-tangle-file "{}")' \;
+#!/bin/bash
+
+readonly WORKDIR="$( cd -P "$( dirname "$0" )/.." && pwd )"
+if [[ -n "$1" ]]; then
+    readonly PATTERN="*${1}"
+else
+    readonly PATTERN='*.org'
+fi
+
+find "$WORKDIR" -type f -name "$PATTERN" -exec emacs --batch -l org --eval '(org-babel-tangle-file "{}")' \;
