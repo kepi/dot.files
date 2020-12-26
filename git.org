@@ -3,8 +3,8 @@
 
 #+begin_src conf
 [user]
-	name = {{ .name }}
-	email = {{ .email }}
+  name = {{ .name }}
+  email = {{ .email }}
   signingkey = {{ .gpg }}
 
 [color]
@@ -26,7 +26,7 @@
   type = cat-file -t
   dump = cat-file -p
 
-	g = grep --break --heading --line-number
+  g = grep --break --heading --line-number
 
   edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
   add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
@@ -35,8 +35,8 @@
   delete-deleted = "!f() { git ls-files --deleted | cut -f2 | sort -u ; }; git rm `f`"
 
 [grep]
-	extendedRegexp = true
-	lineNumber = true
+  extendedRegexp = true
+  lineNumber = true
 
 [format]
   subjectprefix = PATCH
@@ -53,13 +53,13 @@
 #  autocrlf = true
 
 [push]
-	default = simple
+  default = simple
 
 [branch]
   autosetuprebase = always
 
 [dpm]
-	pristineTarCommit = true
+  pristineTarCommit = true
 [fetch]
-	prune = true
+  prune = true
 #+end_src
