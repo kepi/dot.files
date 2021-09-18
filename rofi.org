@@ -11,16 +11,15 @@ rofi-calc latest noaur
 ** TODO Add theme to chezmoi
 I need to find some easy way how to download files to chezmoi to install later.
 
-#+begin_src sh
+#+begin_src sh :results silent
 mkdir -p ~/.local/share/chezmoi/dot_local/share/rofi/themes/
-curl --silent https://gitlab.com/0xdec/base16-rofi/-/raw/master/themes/base16-solarized-dark.rasi > ~/.local/share/chezmoi/dot_local/share/rofi/themes/base16-solarized-dark.rasi
+curl --silent --location https://gitlab.com/jordiorlando/base16-rofi/-/raw/master/themes/base16-solarized-dark.rasi > ~/.local/share/chezmoi/dot_local/share/rofi/themes/base16-solarized-dark.rasi
 #+end_src
-
-#+RESULTS:
 
 * Rasi Config
 I'm using Wayland version of Rofi which is based on Rofi#next with new /rasi/
 config format.
+
 #+begin_src conf
 configuration {
   modi: "run,drun,ssh,keys,calc";
@@ -35,30 +34,36 @@ configuration {
 }
 #+end_src
 
-=sshr= is my custom script for /SSH to root/. It simply connects to server over /SSH/
-and join to predefined /tmux/ session under root or create new one if there is
-none.
+** sshr helper
+=sshr= is small script which simply connects to server over SSH and join to
+predefined root //tmux// session. Or create one if there is none running.
 
 #+begin_src sh :tangle ~/.local/share/chezmoi/bin/executable_sshr.tmpl :mkdirp yes :shebang #!/bin/bash
 readonly SESSION="${USER}"
 readonly SCRIPT_NAME=$(basename "$0")
-readonly SSH_HOST="$1"
 readonly SOCKET_NAME="{{ .sshr_socket_name }}"
+
+SSH_HOST="$1"
 
 TMUX="tmux -L '${SOCKET_NAME}'"
 
 if [[ "$SCRIPT_NAME" == "sshr" ]]; then
     TMUX="sudo -i $TMUX"
+elif [[ "$SCRIPT_NAME" == "yivo" ]]; then
+        TMUX="sudo -u ansible -i $TMUX"
+        SSH_HOST="yivo"
+        CD_DIR=" -c 'ansible-${USER}'"
 fi
 
-ssh "${SSH_HOST}" -t "$TMUX at -t '${SESSION}' || $TMUX new-session -s '${SESSION}'"
-# FIXME: when I'll have tmux 1.8+ everywhere, switch to:
-#ssh "${SSH_HOST}" -t "$TMUX new-session -A -s '${SESSION}'"
+ssh "${SSH_HOST}" -t "$TMUX at -t '${SESSION}' || $TMUX new-session -s '${SESSION}' ${CD_DIR}"
 #+end_src
 
-And you can also create symlink from =sshr= to i.e. =sshu= to use without /sudo/.
+You can also create symlink from =sshr= to i.e. =sshu= to use without /sudo/.
 
 #+begin_src conf :tangle ~/.local/share/chezmoi/bin/symlink_sshu.tmpl :mkdirp yes
 sshr
 #+end_src
 
+* Tweaks and tasks
+** TODO Rofi Org
+Take a look at [[https://github.com/wakatara/rofi-org-todo][GitHub - wakatara/rofi-org-todo: A rofi script to allow easy hotkey adding of...]]
