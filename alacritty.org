@@ -1,0 +1,133 @@
+#+TITLE: Alacritty
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/alacritty/alacritty.yml
+
+[[https://github.com/alacritty/alacritty][Alacritty]] is cross-platform, OpenGL terminal emulator superseding [[./termite.org][Termite]] which
+I used so far.
+
+* Install
+** Arch Linux
+#+begin_src conf :tangle etc/yupfiles/alacritty.yup
+alacritty latest noaur
+nerd-fonts-inconsolata-go latest aur
+#+end_src
+
+* Multiple Monitors with different DPI
+By default, Alacritty adjusting font-size according to DPI, which results in
+bigger/smaller font on second monitor.
+
+I simply can't grasp the reason for this. In my case, when I setup desired font
+size on my 2k monitor, it result in huge font on HD monitor. Which is ironic, as
+you get even less of terminal space...
+
+Anyway no big deal, [[https://github.com/alacritty/alacritty/issues/5076][according to this issue]], you can simply set
+~WINIT_X11_SCALE_FACTOR=1~ environment variable and it works as I want (same as
+/Termite/ before). I'm setting this in .xprofile.
+
+* Options
+** TERM
+This value is used to set the =$TERM= environment variable for each instance of
+Alacritty. If it is not present, alacritty will check the local terminfo
+database and use =alacritty= if it is available, otherwise =xterm-256color= is used.
+
+#+begin_src conf
+env:
+  TERM: xterm-256color
+#+end_src
+
+
+** Scrolling
+Looks like 10000 lines is maximum we can get :/ Termite has infinite history,
+which I strongly prefer. Nothing worse than loosing something important because
+I can't scroll back enough.
+
+#+begin_src conf
+scrolling:
+  # Maximum number of lines in the scrollback buffer.
+  # Specifying '0' will disable scrolling.
+  history: 10000
+
+  # Scrolling distance multiplier.
+  #multiplier: 3
+#+end_src
+
+** Padding
+Blank space added around the window in pixels. This padding is scaled by DPI and
+the specified value is always added at both opposing sides.
+
+#+begin_src conf
+window:
+  padding:
+    x: 9
+    y: 9
+#+end_src
+** Font
+#+begin_src conf
+font:
+  normal:
+    family: InconsolataGo Nerd Font
+    style: Regular
+
+  bold:
+    family: InconsolataGo Nerd Font
+    style: Bold
+
+  italic:
+    family: InconsolataGo Nerd Font
+    style: Italic
+
+  bold_italic:
+    family: InconsolataGo Nerd Font
+    style: Bold Italic
+
+  # Point size
+  size: 11.0
+draw_bold_text_with_bright_colors: false
+#+end_src
+
+** Colors
+I'm currently using /Solarized Dark/ almost everywhere.
+
+#+begin_src conf
+# Base16 Solarized Dark 256 - alacritty color config
+# Ethan Schoonover (modified by aramisgithub)
+colors:
+  # Default colors
+  primary:
+    background: '0x002b36'
+    foreground: '0x93a1a1'
+
+  # Colors the cursor will use if `custom_cursor_colors` is true
+  cursor:
+    text: '0x002b36'
+    cursor: '0x93a1a1'
+
+  # Normal colors
+  normal:
+    black:   '0x002b36'
+    red:     '0xdc322f'
+    green:   '0x859900'
+    yellow:  '0xb58900'
+    blue:    '0x268bd2'
+    magenta: '0x6c71c4'
+    cyan:    '0x2aa198'
+    white:   '0x93a1a1'
+
+  # Bright colors
+  bright:
+    black:   '0x657b83'
+    red:     '0xdc322f'
+    green:   '0x859900'
+    yellow:  '0xb58900'
+    blue:    '0x268bd2'
+    magenta: '0x6c71c4'
+    cyan:    '0x2aa198'
+    white:   '0xfdf6e3'
+
+  indexed_colors:
+    - { index: 16, color: '0xcb4b16' }
+    - { index: 17, color: '0xd33682' }
+    - { index: 18, color: '0x073642' }
+    - { index: 19, color: '0x586e75' }
+    - { index: 20, color: '0x839496' }
+    - { index: 21, color: '0xeee8d5' }
+#+end_src
