@@ -62,4 +62,7 @@
   pristineTarCommit = true
 [fetch]
   prune = true
+
+[commit]
+  gpgsign = true
 #+end_src
