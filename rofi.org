@@ -24,14 +24,14 @@ config format.
 configuration {
   modi: "run,drun,ssh,keys,calc";
   show-icons: true;
-  terminal: "/usr/bin/termite";
-  ssh-command: "{terminal} -e "sshr {host}"";
+  terminal: "/usr/bin/alacritty";
+  ssh-command: "{terminal} -e sshr {host}";
   sort: true;
   parse-hosts: false;
   parse-known-hosts: true;
   m: "-4";
-  theme: "base16-solarized-dark.rasi";
 }
+@theme "base16-solarized-dark.rasi"
 #+end_src
 
 ** sshr helper
