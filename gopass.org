@@ -21,16 +21,16 @@ autoclip: false
 autoimport: true
 cliptimeout: 45
 exportkeys: false
-mime: false
 nocolor: false
 nopager: false
 notifications: false
-path: {{ .chezmoi.homedir }}/.password-store
+parsing: true
+path: {{ .chezmoi.homeDir }}/.password-store
 safecontent: true
 {{- if (index . "pass") }}
 mounts:
-  {{- range $mount, $dir := .pass.mounts }}
-  {{ $mount }}: {{ $dir }}
-  {{- end }}
+{{-   range $mount, $dir := .pass.mounts }}
+    {{ $mount }}: {{ $dir }}
+{{-   end }}
 {{- end }}
 #+end_src
