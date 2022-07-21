@@ -1,0 +1,72 @@
+#+TITLE: MPV
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/mpv/mpv.conf.tmpl
+
+* Install
+** Arch Linux
+#+begin_src conf :tangle etc/yupfiles/mpv.yup
+mpv latest aur
+#+end_src
+
+* Config
+Documentation: https://wiki.archlinux.org/title/Mpv
+
+** Main config
+*** Subtitles
+#+begin_src conf
+sub-auto=fuzzy
+#+end_src
+
+*** Quality
+#+begin_src conf
+# profile=gpu-hq
+# scale=ewa_lanczossharp
+# cscale=ewa_lanczossharp
+# video-sync=display-resample
+# interpolation
+# tscale=oversample
+#+end_src
+
+*** Save video on quit
+#+begin_src conf
+save-position-on-quit
+#+end_src
+
+*** youtube-dl
+#+begin_src conf
+ytdl-format="bestvideo[height<=?1440]+bestaudio/best"
+#+end_src
+
+*** keep open
+Do not terminate when playing or seeking beyond the end of the file, and there
+is not next file to be played (and --loop is not used). Instead, pause the
+player. When trying to seek beyond end of the file, the player will attempt to
+seek to the last frame.
+
+#+begin_src conf
+idle
+keep-open=always
+#+end_src
+*** Design
+#+begin_src conf
+osc=no
+
+[Auto.Idle]
+profile-cond=p["idle-active"]
+profile-restore=copy-equal
+osd-playing-msg=' '
+title=' '
+background=1.0
+geometry=640
+#+end_src
+
+** Key bindings
+:PROPERTIES:
+:header-args:conf: :tangle ~/.local/share/chezmoi/private_dot_config/mpv/input.conf.tmpl
+:END:
+
+#+begin_src conf
+j seek  5
+k seek -5
+l seek  60
+h seek -60
+#+end_src
