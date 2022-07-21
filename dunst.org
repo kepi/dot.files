@@ -166,7 +166,7 @@ icon_position = left
 max_icon_size = 80
 
 # Paths to default icons.
-icon_path = {{ .chezmoi.homedir }}/.local/share/icons/Paper/48x48/mimetypes/:{{ .chezmoi.homedir }}/.local/share/icons/Paper/48x48/status/:{{ .chezmoi.homedir }}/.local/share/icons/Paper/48x48/devices/:{{ .chezmoi.homedir }}/.local/share/icons/Paper/48x48/notifications/:{{ .chezmoi.homedir }}/.local/share/icons/Paper/48x48/emblems/
+icon_path = {{ .chezmoi.homeDir }}/.local/share/icons/Paper/48x48/mimetypes/:{{ .chezmoi.homeDir }}/.local/share/icons/Paper/48x48/status/:{{ .chezmoi.homeDir }}/.local/share/icons/Paper/48x48/devices/:{{ .chezmoi.homeDir }}/.local/share/icons/Paper/48x48/notifications/:{{ .chezmoi.homeDir }}/.local/share/icons/Paper/48x48/emblems/
 
 frame_width = 3
 frame_color = "#8EC07C"
