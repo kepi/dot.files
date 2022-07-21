@@ -6,8 +6,6 @@
 #+begin_src conf :tangle etc/yupfiles/i3.yup
 i3-gaps latest noaur
 i3blocks latest noaur
-xss-lock latest noaur
-i3lock latest noaur
 i3status latest noaur
 i3status-rust-git latest aur
 xcape latest noaur
@@ -15,108 +13,61 @@ pulseaudio latest aur
 pulseaudio-bluetooth latest aur
 pulseaudio-zeroconf latest aur
 jq latest noaur
+betterlockscreen latest
 #+end_src
 
-* TODO Screen lock
-** Arrange screenlock wallpapers for multimonitor
-#+begin_src sh :tangle ~/.local/share/chezmoi/bin/executable_setlockbg :mkdirp yes :shebang #!/bin/bash
-BG_SAVED=~/.config/nitrogen/bg-saved.cfg
-CACHE_DIR=~/.cache/lockbg
-LOCK_BG=${CACHE_DIR}/lock.$(xrandr --listactivemonitors | md5sum | cut -f1 -d" ").rgb
-CURRENT_LOCK_BG=${CACHE_DIR}/lock.rgb
+* TODO Workspace Groups
+Looks exactly like what I need for personal/work stuff.
 
-if [[ -f "$LOCK_BG" ]] && [[ "$1" != "force" ]]; then
-    ln -s -f "$LOCK_BG" "$CURRENT_LOCK_BG"
-    exit 0
-fi
+https://github.com/infokiller/i3-workspace-groups
 
-CONVERT=convert
-which gm > /dev/null && CONVERT="gm convert"
+* Screen lock
+I switched from my custom scripts to [[https://github.com/betterlockscreen/betterlockscreen][betterlockscreen]].
 
-mkdir -p "$CACHE_DIR"
-
-BGS=""
-while read -r monitor res; do
-    bgfile_orig=$(awk -F= -v pattern="[xin_${monitor}]" 'BEGIN { found=0; }; $0 == pattern { found=1 }; /^file=/ && found==1 { print $2; found=0; }' $BG_SAVED)
-    bgres=$(identify -format '%wx%h' "${bgfile_orig}")
-
-    bgfile="${CACHE_DIR}/$(echo "$bgfile_orig" | md5sum | cut -f1 -d" ").pnm"
-
-    if [ ! -f "$bgfile" ]; then
-        resize=""
-        [ "$res" == "$bgres" ] || resize="-resize ${res}"
-        echo $CONVERT $resize "'$bgfile_orig'" "'$bgfile'"
-        eval $CONVERT $resize "'$bgfile_orig'" "'$bgfile'"
-    fi
-    BGS="${BGS} '${bgfile}'"
-done <<< $(xrandr --current --listactivemonitors | tail -n +2 | sort -t+ -k3 | sed 's/[:/x+]/ /g' | awk '{ print $1 " " $3"x"$5 }')
-
-echo $CONVERT -background black $BGS +append RGB:"- > ${LOCK_BG}"
-eval $CONVERT -background black $BGS +append RGB:- > "${LOCK_BG}"
-ln -s -f "$LOCK_BG" "$CURRENT_LOCK_BG"
-#+end_src
-
-** Lock script
-Lock screen with wallpaper.
-
-#+begin_src sh :tangle ~/.local/share/chezmoi/bin/executable_lock :mkdirp yes :shebang #!/bin/sh
-readonly LOCK_BG=~/.cache/lockbg/lock.rgb
-readonly BG_RES=$(xrandr --current | head -n1 | sed -r 's/^.*current ([0-9]+) x ([0-9]+),.*/\1x\2/')
-~/bin/setlockbg
-
-echo i3lock --ignore-empty-password --raw "${BG_RES}:rgb" --image "$LOCK_BG"
-i3lock --ignore-empty-password --raw "${BG_RES}:rgb" --image "$LOCK_BG"
-#+end_src
-
-** TODO Fix lock bg system
-It would be much better to create wallpaper on monitor layout change so it is
-ready when we need to lock the screen. We could forget ~/bin/lock script then
-and rely on safer system script.
-
-** xss-lock systemd user
-#+begin_src sh :tangle ~/.local/share/chezmoi/private_dot_config/systemd/user/xss-lock.service.tmpl :mkdirp yes :tangle-mode (identity #o0644)
-[Unit]
-Description=Auto lock
-PartOf=graphical-session.target
-
-[Service]
-Type=simple
-{{- if eq .xdg_session_type "wayland" }}
-ExecStart=/usr/bin/xss-lock -l -- swaylock
-{{- else }}
-ExecStart=/usr/bin/xss-lock -l -- ${HOME}/bin/lock
-{{- end }}
-
-[Install]
-WantedBy=graphical-session.target
+** Installing betterlockscreen
+#+begin_src sh
+yay betterlockscreen
+systemctl enable betterlockscreen@$USER.service
 #+end_src
 
 * TODO Xinitrc
-I'm starting X from =xinitrc=
+I was used to start X with =startx= command, but it has been causing some issues
+lately, so I switched to display manager, currently cddm. Any display manager
+which is capable of using [[file:~/.xprofile][.xprofile]] should suffice. And, if you are able to run
+=startx=, it should work too.
 
-Better documentation and split needed and probably move the stuff specific for
-my setup elsewhere.
+** xprofile
+#+begin_src conf :tangle ~/.local/share/chezmoi/dot_xprofile
+#!/bin/sh
+userresources=$HOME/.Xresources
 
-.cache stuff should be in user init, not X init.
+# merge in defaults and keymaps
+[ -f "$userresources" ] && xrdb -merge "$userresources"
+
+# setup my keyboard
+setxkbmap cus_klaveska,us -option grp:menu_toggle,ralt_switch,terminate:ctrl_alt_bksp,grp_led:scroll,ctrl:nocaps && xcape -e 'Control_L=Escape'
+
+# Camlink fix
+[ -f /usr/local/lib/camlink/camlink.so ] && export LD_PRELOAD=/usr/local/lib/camlink/camlink.so
+
+# Alacritty DPI multi monitor fix
+export WINIT_X11_SCALE_FACTOR=1
+export PATH=~/bin:~/.local/bin:$PATH
+#+end_src
+
+** xinitrc
+[[file:~/.xinitrc][.xinitrc]] is used for =startx= method. We simply source =.xprofile= and run i3.
 
 #+begin_src conf :tangle ~/.local/share/chezmoi/dot_xinitrc
 #!/bin/sh
-
-userresources=$HOME/.Xresources
+# merge sysresources
 sysresources=/etc/X11/xinit/.Xresources
+[ -f $sysresources ] && xrdb -merge "$sysresources"
 
-# merge in defaults and keymaps
-if [ -f $sysresources ]; then
-    xrdb -merge $sysresources
-fi
+[ -f "$HOME/.xprofile" ] && source "$HOME/.xprofile"
 
-if [ -f "$userresources" ]; then
-    xrdb -merge "$userresources"
-fi
-
+# run systemd user session
 /etc/X11/xinit/xinitrc.d/50-systemd-user.sh
-
-setxkbmap cus_klaveska -option ralt_switch,terminate:ctrl_alt_bksp,grp_led:scroll,ctrl:nocaps && xcape -e 'Control_L=Escape'
 
 exec i3
 #+end_src
@@ -140,18 +91,18 @@ window, everything rearrange (which might be weird).
 set $mod Mod4
 
 # pojmenování ploch
-set $1 "1: web"
-set $2 "2: term"
-set $3 "3: mail"
-set $4 "4: emacs"
-set $5 "5: ansible"
-set $6 "6: misc"
-set $7 "7: misc"
-set $8 "8: chrome"
-set $9 "9: ff"
-set $0 "0: fs"
+set $ws1 "1: web"
+set $ws2 "2: term"
+set $ws3 "3: mail"
+set $ws4 "4: emacs"
+set $ws5 "5: code"
+set $ws6 "6: misc"
+set $ws7 "7: misc"
+set $ws8 "8: chrome"
+set $ws9 "9: ff"
+set $ws0 "0: fs"
+set $ws11 "11: ansible"
 
-exec --no-startup-id nitrogen --restore
 exec --no-startup-id ~/bin/sway.autostart
 
 # turn of screen blanking
@@ -167,11 +118,12 @@ gaps outer -4
 smart_gaps on
 
 ### Assigns
-assign [class="^Riot$"] → jabber
-assign [class="^Firefox$"] → $9
+#assign [class="^Riot$"] → jabber
+#assign [class="^Firefox$"] → $ws9
 for_window [class="^Qalculate"] floating enable
-assign [title="Dýchánkový board"] → kanban
-assign [title="query_id=255"] → kanban
+for_window [class="floating"] floating enable
+for_window [class="tw-com-aten-ikvm-KVMMain"] floating disable
+assign [class="tw-com-aten-ikvm-KVMMain"] → $ws0
 
 # autostarts
 exec --no-startup-id riot-web
@@ -188,7 +140,7 @@ set $up k
 set $right l
 # Your preferred terminal emulator
 #set $term urxvt
-set $term termite
+set $term alacritty
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
 #set $menu dmenu_path | dmenu | xargs i3-msg exec
@@ -226,25 +178,10 @@ bindsym $mod+s exec $ssh
 set $workspaces_switch i3-msg -t get_workspaces | jq '.[] | .name' | sed 's/"//g' | rofi -dmenu -p 'Workspace:' | xargs -r ~/bin/i3-switch-workspace
 bindsym $mod+i exec --no-startup-id $workspaces_switch
 
-
 bindsym $mod+f exec --no-startup-id "rofi -show window"
 
-### Idle configuration
-#
-# Example configuration:
-#
-# exec swayidle -w \
-#          timeout 300 'swaylock -f -c 000000' \
-#          timeout 600 'i3-msg "output * dpms off"' \
-#               resume 'i3-msg "output * dpms on"' \
-#          before-sleep 'swaylock -f -c 000000'
-#
-# This will lock your screen after 300 seconds of inactivity, then turn off
-# your displays after another 300 seconds, and turn your screens back on when
-# resumed. It will also lock your screen before your computer goes to sleep.
-
-set $lock xset s activate
-bindsym --release Print exec $lock
+bindsym $mod+r exec --no-startup-id "remmina_menu"
+bindsym --release Print exec betterlockscreen -l
 
 ### Key bindings
 #
@@ -267,10 +204,10 @@ bindsym $mod+d exec $menu
 floating_modifier $mod
 
 # reload the configuration file
-bindsym $mod+Shift+r reload
+bindsym $mod+Alt+r reload
 
 # exit sway (logs you out of your Wayland session)
-bindsym $mod+Shift+e exec i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'i3-msg exit'
+bindsym $mod+Alt+Shift+e exec i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'i3-msg exit'
 #
 # Moving around:
 #
@@ -306,63 +243,42 @@ bindsym $mod+semicolon focus output right
 # aby se správně pojmenovaly plochy protože i3wm je
 # pojmenovává dle bindsym viz https://github.com/i3/i3/issues/1414
 
-bindsym $mod+Alt+Shift+1 workspace $1
-bindsym $mod+Alt+Shift+2 workspace $2
-bindsym $mod+Alt+Shift+3 workspace $3
-bindsym $mod+Alt+Shift+4 workspace $4
-bindsym $mod+Alt+Shift+5 workspace $5
-bindsym $mod+Alt+Shift+6 workspace $6
-bindsym $mod+Alt+Shift+7 workspace $7
-bindsym $mod+Alt+Shift+8 workspace $8
-bindsym $mod+Alt+Shift+9 workspace $9
-bindsym $mod+Alt+Shift+0 workspace $0
+bindcode $mod+Alt+Shift+10 workspace $ws1
+bindcode $mod+Alt+Shift+11 workspace $ws2
+bindcode $mod+Alt+Shift+12 workspace $ws3
+bindcode $mod+Alt+Shift+13 workspace $ws4
+bindcode $mod+Alt+Shift+14 workspace $ws5
+bindcode $mod+Alt+Shift+15 workspace $ws6
+bindcode $mod+Alt+Shift+16 workspace $ws7
+bindcode $mod+Alt+Shift+17 workspace $ws8
+bindcode $mod+Alt+Shift+18 workspace $ws9
+bindcode $mod+Alt+Shift+19 workspace $ws0
+bindcode $mod+Alt+Shift+20 workspace $ws11
 
-bindsym $mod+1 exec --no-startup-id $switchws $1
-bindsym $mod+2 exec --no-startup-id $switchws $2
-bindsym $mod+3 exec --no-startup-id $switchws $3
-bindsym $mod+4 exec --no-startup-id $switchws $4
-bindsym $mod+5 exec --no-startup-id $switchws $5
-bindsym $mod+6 exec --no-startup-id $switchws $6
-bindsym $mod+7 exec --no-startup-id $switchws $7
-bindsym $mod+8 exec --no-startup-id $switchws $8
-bindsym $mod+9 exec --no-startup-id $switchws $9
-bindsym $mod+0 exec --no-startup-id $switchws $0
-
-# move focused container to workspace
-bindsym $mod+Shift+1 move container to workspace $1
-bindsym $mod+Shift+2 move container to workspace $2
-bindsym $mod+Shift+3 move container to workspace $3
-bindsym $mod+Shift+4 move container to workspace $4
-bindsym $mod+Shift+5 move container to workspace $5
-bindsym $mod+Shift+6 move container to workspace $6
-bindsym $mod+Shift+7 move container to workspace $7
-bindsym $mod+Shift+8 move container to workspace $8
-bindsym $mod+Shift+9 move container to workspace $9
-bindsym $mod+Shift+0 move container to workspace $0
-
-# Česká verze
-bindsym $mod+uring exec --no-startup-id $switchws $1
-bindsym $mod+ecaron exec --no-startup-id $switchws $2
-bindsym $mod+scaron exec --no-startup-id $switchws $3
-bindsym $mod+ccaron exec --no-startup-id $switchws $4
-bindsym $mod+rcaron exec --no-startup-id $switchws $5
-bindsym $mod+zcaron exec --no-startup-id $switchws $6
-bindsym $mod+yacute exec --no-startup-id $switchws $7
-bindsym $mod+aacute exec --no-startup-id $switchws $8
-bindsym $mod+iacute exec --no-startup-id $switchws $9
-bindsym $mod+eacute exec --no-startup-id $switchws $0
+bindcode $mod+10 exec --no-startup-id $switchws $ws1
+bindcode $mod+11 exec --no-startup-id $switchws $ws2
+bindcode $mod+12 exec --no-startup-id $switchws $ws3
+bindcode $mod+13 exec --no-startup-id $switchws $ws4
+bindcode $mod+14 exec --no-startup-id $switchws $ws5
+bindcode $mod+15 exec --no-startup-id $switchws $ws6
+bindcode $mod+16 exec --no-startup-id $switchws $ws7
+bindcode $mod+17 exec --no-startup-id $switchws $ws8
+bindcode $mod+18 exec --no-startup-id $switchws $ws9
+bindcode $mod+19 exec --no-startup-id $switchws $ws0
+bindcode $mod+20 exec --no-startup-id $switchws $ws11
 
 # move focused container to workspace
-bindsym $mod+Shift+uring move container to workspace $1
-bindsym $mod+Shift+ecaron move container to workspace $2
-bindsym $mod+Shift+scaron move container to workspace $3
-bindsym $mod+Shift+ccaron move container to workspace $4
-bindsym $mod+Shift+rcaron move container to workspace $5
-bindsym $mod+Shift+zcaron move container to workspace $6
-bindsym $mod+Shift+yacute move container to workspace $7
-bindsym $mod+Shift+aacute move container to workspace $8
-bindsym $mod+Shift+iacute move container to workspace $9
-bindsym $mod+Shift+eacute move container to workspace $0
+bindcode $mod+Shift+10 move container to workspace $ws1
+bindcode $mod+Shift+11 move container to workspace $ws2
+bindcode $mod+Shift+12 move container to workspace $ws3
+bindcode $mod+Shift+13 move container to workspace $ws4
+bindcode $mod+Shift+14 move container to workspace $ws5
+bindcode $mod+Shift+15 move container to workspace $ws6
+bindcode $mod+Shift+16 move container to workspace $ws7
+bindcode $mod+Shift+17 move container to workspace $ws8
+bindcode $mod+Shift+18 move container to workspace $ws9
+bindcode $mod+Shift+19 move container to workspace $ws0
+bindcode $mod+Shift+20 move container to workspace $ws11
 
 #
 # Layout stuff:
@@ -399,11 +315,11 @@ bindsym --release $mod+space layout toggle split tabbed
 # You can send windows there and get them back later.
 
 # Move the currently focused window to the scratchpad
-bindsym $mod+Shift+minus move scratchpad
+#bindsym $mod+Shift+ move scratchpad
 
 # Show the next scratchpad window or hide the focused scratchpad window.
 # If there are multiple scratchpad windows, this command cycles through them.
-bindsym $mod+minus scratchpad show
+#bindsym $mod+ scratchpad show
 #
 # Resizing containers:
 #
@@ -428,7 +344,7 @@ mode "resize" {
     bindsym Escape mode "default"
 }
 
-bindsym $mod+r mode "resize"
+bindsym $mod+Shift+r mode "resize"
 
 # Colors
 
@@ -487,31 +403,37 @@ separator = "<span size='large' font_family='TerminessTTF Nerf Dont Mono' stretc
 
 [[block]]
 block = "focused_window"
-max_width = 80
 
 [[block]]
 block = "custom"
-command = "emacsclient -s mu -e '(if org-clock-current-task (string-trim (substring-no-properties (org-clock-get-clock-string))) )' | grep -v 'nil'"
+command = ''' ~/bin/status-podpora '''
+json = true
+interval = 60
+[[block.click]]
+button = "left"
+cmd = "xdg-open 'https://projects.igloonet.cz/projects/hosting/agile/board?query_id=304'"
 
 [[block]]
-block = "music"
-player = "spotify"
-buttons = ["play", "next"]
-max_width = 25
-marquee = false
+block = "custom"
+command = ''' ~/bin/status-clocked_in '''
+json = true
 
+# [[block]]
+# block = "music"
+# player = "spotify"
+# buttons = ["play", "next"]
+# max_width = 25
+# marquee = false
+
+{{ if .battery_device }}
 [[block]]
 block = "battery"
 device = "{{ .battery_device }}"
 
+{{ end }}
 # [[block]]
 # block = "sound"
 # driver = "pulseaudio"
-
-[[block]]
-block = "time"
-interval = 5
-format = "%a %_d/%m %R"
 
 [[block]]
 block = "maildir"
@@ -520,33 +442,40 @@ inboxes = ["Maily/kepi/INBOX"]
 threshold_warning = 6
 threshold_critical = 20
 
-[[block]]
-block = "net"
-device = "wlp64s0"
-ssid = true
-speed_up = false
-speed_down = false
-interval = 5
+# [[block]]
+# block = "net"
+# device = "wlp64s0"
+# ssid = true
+# speed_up = false
+# speed_down = false
+# interval = 5
 
-[[block]]
-block = "net"
-device = "enp59s0f1"
-speed_up = false
-speed_down = false
-interval = 5
+# [[block]]
+# block = "net"
+# device = "enp59s0f1"
+# speed_up = false
+# speed_down = false
+# interval = 5
 
 [[block]]
 block = "memory"
-format_mem = "{MAg}GB ({MApi}%)"
+format_mem = "$mem_used.eng(3,B,M) $mem_avail_percents.eng(2)"
 display_type = "memory"
-icons = true
 clickable = true
 interval = 5
 warning_mem = 80
 critical_mem = 95
+
+[[block]]
+block = "time"
+interval = 5
+format = "%a %_d/%m %R"
+
 #+end_src
 
 ** Support scripts
+
+*** Switch Workspace
 #+begin_src conf :tangle ~/.local/share/chezmoi/bin/executable_i3-switch-workspace :mkdirp yes :shebang #!/bin/bash
 which jq || notify-send --urgency=critical "jq not installed"
 
@@ -563,4 +492,13 @@ i3-msg "focus output ${OUTPUT_ACTIVE}"
 
 # problém s empty workspacama
 # https://sainathadapa.github.io/blog/i3-empty-workspace-workaround/
+#+end_src
+
+*** Status Clocked In
+#+begin_src conf :tangle ~/.local/share/chezmoi/bin/executable_status-clocked_in :mkdirp yes :shebang #!/bin/bash
+if ps -ef | grep 'server-name "m[u]"' > /dev/null; then
+   emacs --batch --eval "(progn (require 'server) (princ (format \"%s\\n\" (server-eval-at \"mu\" '(org-clock-current-task-to-i3status-json)))))" || echo '{"text": ""}'
+else
+  echo '{"text": ""}'
+fi
 #+end_src
