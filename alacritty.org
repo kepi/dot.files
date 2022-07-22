@@ -7,7 +7,7 @@ I used so far.
 * Install
 ** Arch Linux
 #+begin_src conf :tangle etc/yupfiles/alacritty.yup
-alacritty latest noaur
+alacritty-git latest aur
 nerd-fonts-inconsolata-go latest aur
 #+end_src
 
@@ -82,6 +82,24 @@ font:
   # Point size
   size: 11.0
 draw_bold_text_with_bright_colors: false
+#+end_src
+
+** Cursor
+And all the time, I thought I hate blinking cursor. But what I discovered is
+that it really helps when i.e. filling passwords with =xdotool=. Cursor start
+blinking when typing is done and you know you can hit the enter.
+
+Even better, Alacritty has 5 seconds blinking timeout, so it is much quieter
+than usual.
+
+#+begin_src conf
+cursor:
+  style:
+    shape: Block
+    blinking: Always
+  vi_mode_style:
+    shape: Beam
+    blinking: Always
 #+end_src
 
 ** Colors
