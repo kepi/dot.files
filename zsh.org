@@ -285,7 +285,7 @@ typeset -g ZSH_FZF_HISTORY_SEARCH_BIND='^r'
 
 # Args for fzf
 (( ! ${+ZSH_FZF_HISTORY_SEARCH_FZF_ARGS} )) &&
-typeset -g ZSH_FZF_HISTORY_SEARCH_FZF_ARGS='--no-sort --no-multi --exact --tac --layout=reverse'
+typeset -g ZSH_FZF_HISTORY_SEARCH_FZF_ARGS='--no-sort --no-multi --exact --tac --layout=reverse --height=25%'
 
 # Extra args for fzf
 (( ! ${+ZSH_FZF_HISTORY_SEARCH_FZF_EXTRA_ARGS} )) &&
