@@ -1,5 +1,6 @@
 #+TITLE: Alacritty
 #+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/alacritty/alacritty.yml
+#+PROPERTY: header-args:yaml :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/alacritty/alacritty.yml
 
 [[https://github.com/alacritty/alacritty][Alacritty]] is cross-platform, OpenGL terminal emulator superseding [[./termite.org][Termite]] which
 I used so far.
@@ -24,23 +25,12 @@ Anyway no big deal, [[https://github.com/alacritty/alacritty/issues/5076][accord
 /Termite/ before). I'm setting this in .xprofile.
 
 * Options
-** TERM
-This value is used to set the =$TERM= environment variable for each instance of
-Alacritty. If it is not present, alacritty will check the local terminfo
-database and use =alacritty= if it is available, otherwise =xterm-256color= is used.
-
-#+begin_src conf
-env:
-  TERM: xterm-256color
-#+end_src
-
-
 ** Scrolling
 Looks like 10000 lines is maximum we can get :/ Termite has infinite history,
 which I strongly prefer. Nothing worse than loosing something important because
 I can't scroll back enough.
 
-#+begin_src conf
+#+begin_src yaml
 scrolling:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
@@ -54,14 +44,15 @@ scrolling:
 Blank space added around the window in pixels. This padding is scaled by DPI and
 the specified value is always added at both opposing sides.
 
-#+begin_src conf
+#+begin_src yaml
 window:
   padding:
     x: 9
     y: 9
 #+end_src
+
 ** Font
-#+begin_src conf
+#+begin_src yaml
 font:
   normal:
     family: InconsolataGo Nerd Font
@@ -92,7 +83,7 @@ blinking when typing is done and you know you can hit the enter.
 Even better, Alacritty has 5 seconds blinking timeout, so it is much quieter
 than usual.
 
-#+begin_src conf
+#+begin_src yaml
 cursor:
   style:
     shape: Block
@@ -105,7 +96,7 @@ cursor:
 ** Colors
 I'm currently using /Solarized Dark/ almost everywhere.
 
-#+begin_src conf
+#+begin_src yaml
 # Base16 Solarized Dark 256 - alacritty color config
 # Ethan Schoonover (modified by aramisgithub)
 colors:
