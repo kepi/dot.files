@@ -213,20 +213,38 @@ setopt typeset_silent
 
 
 ** Key bindings
+I'm using Vi mode instead of default Emacs one.
+
 #+begin_src conf
-# Enable emacs (-e) or vi (-v) keymap.
 bindkey -v
 #+end_src
 
+It is also better to have faster switching between Vi modes
+
+#+begin_src conf
+export KEYTIMEOUT=1
+#+end_src
+
+=Alt+.= to insert/cycle last word is a must.
+
 #+begin_src conf
 bindkey '^[.' insert-last-word                        # alt+.   insert last word
+#+end_src
 
-bindkey '^A'  beginning-of-line                       # ctrl+a  go to the beginning of line
-bindkey '^E'  end-of-line                             # ctrl+e  go to the end of line
+And if you like it, also try =copy-earlier-word= binded to =Alt+m=. It get some
+using to, but it is really convenient.
 
+#+begin_src conf
 autoload -Uz copy-earlier-word
 zle -N copy-earlier-word
 bindkey "^[m" copy-earlier-word
+#+end_src
+
+Event with Vi mode, I'm used to couple bindings from Emacs:
+
+#+begin_src conf
+bindkey '^A'  beginning-of-line
+bindkey '^E'  end-of-line
 #+end_src
 
 *** Vim Mapping for Completion
