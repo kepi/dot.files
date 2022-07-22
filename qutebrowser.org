@@ -23,6 +23,12 @@ config.source(
 )
 #+end_src
 
+Turn off fokin autoplay
+
+#+begin_src python
+c.content.autoplay = False
+#+end_src
+
 Dark scheme everywhere we could.
 
 #+begin_src python
