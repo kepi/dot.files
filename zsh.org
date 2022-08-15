@@ -112,7 +112,7 @@ for this, I might probably try and stay with [[https://zdharma.org/zinit/wiki/IN
 humans]] and it looks like exact match for what I need.
 
 ** Options
-Sert up Zsh options. There are [[https://zsh.sourceforge.io/Doc/Release/Options.html][too many]] to go through all of them, but I took
+Set up Zsh options. There are [[https://zsh.sourceforge.io/Doc/Release/Options.html][too many]] to go through all of them, but I took
 time to copy/adjust short description for every option I'm using, so I know what
 it is doing.
 
@@ -443,8 +443,29 @@ export WINIT_X11_SCALE_FACTOR=1
 
 ** Path
 #+begin_src conf
-PATH=~/bin:~/.local/bin:~/.yarn/bin:~/.pyenv/bin:~/.poetry/bin:~/.emacses/doom/emacs.d/bin:$PATH
+PATH=$HOME/bin:$HOME/.local/bin:$HOME/.yarn/bin:$HOME/.pyenv/bin:$HOME/.poetry/bin:$HOME/.emacses/doom/emacs.d/bin:$PATH
 export PATH
+#+end_src
+
+** Pasting
+When pasting something to terminal, mainly from browser, most of the time it
+is with trailing newline.
+
+Fortunately, in ZSH >= 5.1, [[https://cirw.in/blog/bracketed-paste][bracketed paste]] is on by default, so commands don't
+get executed until you hit Enter, no matter if they have newline at the end.
+This makes possible hidden attacks less dangerous. But newline is still at least
+ugly and inconvenient to work with (ugly history, backspacing, moving to another
+line etc).
+
+It took me only some 5 years to realize that maybe trailing newline can be
+removed automatically in ZSH? 1 minute later I found [[https://unix.stackexchange.com/a/693146/58504][this handy zle widget]] which
+does exactly that:
+
+#+begin_src conf
+bracketed-paste() {
+  zle .$WIDGET && LBUFFER=${LBUFFER%$'\n'}
+}
+zle -N bracketed-paste
 #+end_src
 
 ** Antidote
@@ -577,7 +598,7 @@ davidparsson/zsh-pyenv-lazy
 #+begin_src conf
 NVM_SYMLINK_CURRENT="true" # nvm use should make a symlink
 NVM_DIR="$HOME/.nvm"
-lazyload nvm node gatsby yarn npm -- 'source "$NVM_DIR/nvm.sh"'
+lazyload nvm node gatsby yarn npm npx -- 'source "$NVM_DIR/nvm.sh"'
 #+end_src
 
 *** Rbenv - Ruby version manager
