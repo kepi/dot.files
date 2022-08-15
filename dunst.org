@@ -70,14 +70,12 @@ stack_duplicates = yes
 hide_duplicates_count = yes
 
 # Window position
-width = 200
+width = (0, 400)
 height = 50
 origin = bottom-right
 offset = 10x50
 
-# Shrink window if it's smaller than the width.  Will be ignored if
-# width is 0.
-shrink = no
+gap_size = 5
 
 # The transparency of the window.  Range: [0; 100].
 # This option will only work if a compositing windowmanager is
