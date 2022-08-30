@@ -390,11 +390,12 @@ bindsym $mod+Shift+i exec --no-startup-id $workspaces_send
 I'm using [[https://github.com/greshake/i3status-rust][i3status-rust]] with pretty basic config:
 
 #+begin_src conf :tangle ~/.local/share/chezmoi/private_dot_config/i3/status.toml.tmpl
+[icons]
 icons = "awesome"
 
 [theme]
 #name = "gruvbox-dark"
-name = "gruvbox-dark"
+theme = "gruvbox-dark"
 
 [theme.overrides]
 # pango markup viz https://developer.gnome.org/pygtk/stable/pango-markup-language.html
