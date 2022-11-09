@@ -443,7 +443,7 @@ export WINIT_X11_SCALE_FACTOR=1
 
 ** Path
 #+begin_src conf
-PATH=$HOME/bin:$HOME/.local/bin:$HOME/.yarn/bin:$HOME/.pyenv/bin:$HOME/.poetry/bin:$HOME/.emacses/doom/emacs.d/bin:$PATH
+PATH=$HOME/bin:$HOME/.local/bin:$HOME/.yarn/bin:$HOME/.pyenv/bin:$HOME/.poetry/bin:$HOME/.emacs.d/bin:$PATH
 export PATH
 #+end_src
 
