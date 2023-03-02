@@ -1,5 +1,5 @@
 #+TITLE: Gopass or pass
-#+PROPERTY: header-args:conf :comments no :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/gopass/config.yml.tmpl
+#+PROPERTY: header-args:conf :comments no :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/gopass/config.tmpl
 
 /Password store/ and it's alternative /Gopass/ are nice cmdline password managers.
 
@@ -17,20 +17,23 @@ gopass latest noaur
 
 * Configuration 
 #+begin_src conf
-autoclip: false
-autoimport: true
-cliptimeout: 45
-exportkeys: false
-nocolor: false
-nopager: false
-notifications: false
-parsing: true
-path: {{ .chezmoi.homeDir }}/.password-store
-safecontent: true
+[core]
+       parsing = true
+       notifications = false
+       exportkeys = false
+       cliptimeout = 45
+       showsafecontent = true
+       nopager = false
+       autoimport = true
+       autoclip = false
+[age]
+       usekeychain = false
 {{- if (index . "pass") }}
-mounts:
+[mounts]
+       path = {{ .chezmoi.homeDir }}/.password-store
 {{-   range $mount, $dir := .pass.mounts }}
-    {{ $mount }}: {{ $dir }}
+[mounts "{{ $mount }}"]
+       path = {{ $dir }}
 {{-   end }}
 {{- end }}
 #+end_src
