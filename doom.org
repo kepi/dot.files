@@ -1,0 +1,31 @@
+#+title: Doom Emacs
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes
+
+Just couple helper settings for my Doom setup.
+
+Application icon with Doom's icon.
+
+#+begin_src conf :tangle ~/.local/share/chezmoi/dot_local/share/applications/doom-emacs.desktop
+[Desktop Entry]
+Name=Doom Emacs
+GenericName=Text Editor
+Comment=Edit text
+MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
+Exec=emacs %F
+Icon=~/.icons/doom.svg
+Type=Application
+Terminal=false
+Categories=Development;TextEditor;
+StartupNotify=true
+StartupWMClass=Emacs
+#+end_src
+
+Shortcut tu running emacs client with my server name (my main emacs is always
+running ~mu4e~ so I named it historically after it).
+
+#+begin_src conf :tangle ~/.local/share/chezmoi/bin/em :tangle-mode (identity #o755)
+#!/bin/bash
+
+SERVER_NAME="mu"
+emacsclient -s "${SERVER_NAME}" -a '' -qc "$@"
+#+end_src
