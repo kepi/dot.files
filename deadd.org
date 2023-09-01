@@ -1,0 +1,470 @@
+#+TITLE: Deadd Notification Center
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/deadd/deadd.yml.tmpl
+
+[[https://github.com/phuhl/linux_notification_center][Deadd]] is desktop notification daemon inspired by [[./dunst.org][Dunst]] written in Haskell. I used /Dunst/ for many years. But I started to experiment with connecting my mobile phone through /Kde connect/ and realized, that I want to have something like notification center. And looks like /Deadd/ can do it, is heavily configurable and might be working just ok.
+
+* Install
+** Arch Linux
+#+begin_src conf :tangle etc/yupfiles/dunst.yup
+deadd-notification-center-bin latest aur
+notify-send-py latest aur
+#+end_src
+
+* INPROG Configuration
+#+begin_src conf
+### Margins for notification-center/notifications
+margin-top: 0
+margin-right: 0
+
+### Margins for notification-center
+margin-bottom: 0
+
+### Width of the notification center/notifications in pixels.
+width: 400
+
+### Command to run at startup. This can be used to setup
+### button states.
+# startup-command: deadd-notification-center-startup
+
+### Monitor on which the notification center/notifications will be
+### printed. If "follow-mouse" is set true, this does nothing.
+monitor: 0
+
+### If true, the notification center/notifications will open on the
+### screen, on which the mouse is. Overrides the "monitor" setting.
+follow-mouse: false
+
+notification-center:
+  ### Margin at the top/right/bottom of the notification center in
+  ### pixels. This can be used to avoid overlap between the notification
+  ### center and bars such as polybar or i3blocks.
+  # margin-top: 0
+  # margin-right: 0
+  # margin-bottom: 0
+
+  ### Width of the notification center in pixels.
+  width: 500
+
+  ### Monitor on which the notification center will be printed. If
+  ### "follow-mouse" is set true, this does nothing.
+  # monitor: 0
+
+  ### If true, the notification center will open on the screen, on which
+  ### the mouse is. Overrides the "monitor" setting.
+  follow-mouse: true
+
+  ### Notification center closes when the mouse leaves it
+  hide-on-mouse-leave: true
+
+  ### If newFirst is set to true, newest notifications appear on the top
+  ### of the notification center. Else, notifications stack, from top to
+  ### bottom.
+  new-first: true
+
+  ### If true, the transient field in notifications will be ignored,
+  ### thus the notification will be persisted in the notification
+  ### center anyways
+  ignore-transient: false
+
+  ### Custom buttons in notification center
+  buttons:
+    ### Numbers of buttons that can be drawn on a row of the notification
+    ### center.
+    # buttons-per-row: 5
+
+    ### Height of buttons in the notification center (in pixels).
+    # button-height: 60
+
+    ### Horizontal and vertical margin between each button in the
+    ### notification center (in pixels).
+    # button-margin: 2
+
+    ### Button actions and labels. For each button you must specify a
+    ### label and a command.
+    actions:
+      # - label: VPN
+      #   command: "sudo vpnToggle"
+      # - label: Bluetooth
+      #   command: bluetoothToggle
+      # - label: Wifi
+      #   command: wifiToggle
+      # - label: Screensaver
+      #   command: screensaverToggle
+      # - label: Keyboard
+      #   command: keyboardToggle
+
+notification:
+  ### If true, markup (<u>, <i>, <b>, <a>) will be displayed properly
+  use-markup: true
+
+  ### If true, html entities (&#38; for &, &#37; for %, etc) will be
+  ### parsed properly. This is useful for chromium-based apps, which
+  ### tend to send these in notifications.
+  parse-html-entities: true
+
+  dbus:
+
+    ### If noti-closed messages are enabled, the sending application
+    ### will know that a notification was closed/timed out. This can
+    ### be an issue for certain applications, that overwrite
+    ### notifications on status updates (e.g. Spotify on each
+    ### song). When one of these applications thinks, the notification
+    ### has been closed/timed out, they will not overwrite existing
+    ### notifications but send new ones. This can lead to redundant
+    ### notifications in the notification center, as the close-message
+    ### is send regardless of the notification being persisted.
+    send-noti-closed: false
+
+  app-icon:
+
+    ### If set to true: If no icon is passed by the app_icon parameter
+    ### and no application "desktop-entry"-hint is present, deadd will
+    ### try to guess the icon from the application name (if present).
+    guess-icon-from-name: true
+
+    ### The display size of the application icons in the notification
+    ### pop-ups and in the notification center
+    icon-size: 20
+
+  image:
+
+    ### The maximal display size of images that are part of
+    ### notifications for notification pop-ups and in the notification
+    ### center
+    size: 100
+
+    ### The margin around the top, bottom, left, and right of
+    ### notification images.
+    margin-top: 15
+    margin-bottom: 15
+    margin-left: 15
+    margin-right: 0
+
+  ### Apply modifications to certain notifications:
+  ### Each modification rule needs a "match" and either a "modify" or
+  ### a "script" entry.
+  modifications:
+  ### Match:
+  ### Matches the notifications against these rules. If all of the
+  ### values (of one modification rule) match, the "modify"/"script"
+  ### part is applied.
+  # - match:
+      ### Possible match criteria:
+      # title: "Notification title"
+      # body: "Notification body"
+      # time: "12:44"
+      # app-name: "App name"
+      # urgency: "low" # "low", "normal" or "critical"
+
+    # modify:
+      ### Possible modifications
+      # title: "abc"
+      # body: "abc"
+      # app-name: "abc"
+      # app-icon: "file:///abc.png"
+      ### The timeout has three special values:
+      ### timeout: 0 -> don't time out at all
+      ### timeout: -1 -> use default timeout
+      ### timeout: 1 -> don't show as pop-up
+      ### timeout: >1 -> milliseconds until timeout
+      # timeout: 1
+      # margin-right: 10
+      # margin-top: 10
+      # image: "file:///abc.png"
+      # image-size: 10
+      # transient: true
+      # send-noti-closed: false
+      ### Remove action buttons from notifications
+      # remove-actions: true
+      ### Add a class-name to the notification container, that can be
+      ### used for specific styling of notifications using the
+      ### deadd.css file
+      # class-name: "abc"
+
+  # - match:
+      # app-name: "Chromium"
+
+    ### Instead of modifying a notification directly, a script can be
+    ### run, which will receive the notification as JSON on STDIN. It
+    ### is expected to return JSON/YAML configuration that defines the
+    ### modifications that should be applied. Minimum complete return
+    ### value must be '{"modify": {}, "match": {}}'. Always leave the "match"
+    ### object empty (technical reasons, i.e. I am lazy).
+    # script: "linux-notification-center-parse-chromium"
+  - match:
+      app-name: "Seafile"
+    modify:
+      app-icon: "file:///usr/share/icons/hicolor/scalable/apps/seafile.svg"
+      timeout: 1
+      transient: true
+
+  # - match:
+  #     app-name: "Seafile"
+  #     title: '"kepi-org" is synchronized'
+  #   modify:
+
+
+
+
+  - match:
+      app-name: "Spotify"
+    modify:
+      image-size: 80
+      timeout: 2000
+      send-noti-closed: true
+      class-name: "Spotify"
+  # - match:
+  #     title: Bildschirmhelligkeit
+  #   modify:
+  #     image-size: 60
+  popup:
+
+    ### Default timeout used for notifications in milli-seconds.  This can
+    ### be overwritten with the "-t" option (or "--expire-time") of the
+    ### notify-send command.
+    default-timeout: 5000
+
+    ### Margin above/right/between notifications (in pixels). This can
+    ### be used to avoid overlap between notifications and a bar such as
+    ### polybar or i3blocks.
+    margin-top: 50
+    margin-right: 50
+    margin-between: 20
+
+    ### Defines after how many lines of text the body will be truncated.
+    ### Use 0 if you want to disable truncation.
+    max-lines-in-body: 3
+
+    ### Monitor on which the notifications will be
+    ### printed. If "follow-mouse" is set true, this does nothing.
+    # monitor: 0
+
+    ### If true, the notifications will open on the
+    ### screen, on which the mouse is. Overrides the "monitor" setting.
+    # follow-mouse: false
+
+    click-behavior:
+
+      ### The mouse button for dismissing a popup. Must be either "mouse1",
+      ### "mouse2", "mouse3", "mouse4", or "mouse5"
+      dismiss: mouse1
+
+      ### The mouse button for opening a popup with the default action.
+      ### Must be either "mouse1", "mouse2", "mouse3", "mouse4", or "mouse5"
+      default-action: mouse3
+#+end_src
+
+* Styles
+:PROPERTIES:
+:header-args:css: :tangle ~/.local/share/chezmoi/private_dot_config/deadd/deadd.css.tmpl
+:END:
+
+When trying new styles, you can use this snippet - in terminal - to have style automatically adjusting when you tangle this buffer:
+
+#+begin_example sh
+while ! inotifywait -e close_write ~/.local/share/chezmoi/private_dot_config/deadd/deadd.css.tmpl; do chezmoi apply && notify-send.py a --hint boolean:deadd-notification-center:true string:type:reloadStyle; notify-send.py "Styles reloaded"; done
+#+end_example
+
+
+** Experiments
+#+begin_src css
+@define-color fg #fff;
+@define-color bg rgba(27, 34, 36, 1.0);
+@define-color border #181C1C;
+
+@define-color critical rgb(120, 34, 36);
+@define-color low rgb(39, 41, 52);
+
+@define-color critical_popup rgba(120, 34, 36, 0.5);
+@define-color low_popup rgba(39, 41, 52, 0.5);
+
+@define-color close rgb(20, 26, 27);
+@define-color close_normal rgba(145, 90, 94, 0.75);
+@define-color close_hover rgb(244, 96, 103);
+@define-color close_active rgb(241, 48, 57);
+
+.blurredBG,
+#main_window,
+.blurredBG.low,
+.blurredBG.normal {
+    background: @bg;
+}
+
+.blurredBG.notification {
+    background: rgba(31, 40, 42, 0.75);
+    border-radius: 5px;
+}
+
+#img_img {
+    border-radius: 10px;
+}
+
+.blurredBG.notification.critical {
+    background: @critical_popup;
+}
+
+.blurredBG.notification.low {
+    background: @low_popup;
+}
+
+.notificationInCenter {
+    border-radius: 3px;
+    border: 1pt @border solid;
+    margin-right: 0.75em;
+    margin-left: 0.5em;
+}
+
+.notificationInCenter.critical {
+    background: @critical;
+}
+
+.notificationInCenter.low {
+    background: @low;
+}
+
+.undershoot.top,
+.undershoot.right,
+.undershoot.bottom,
+.undershoot.left {
+    background-image: none;
+}
+
+
+button.userbutton:not(:hover):not(:active),
+button.delete-all:not(:hover):not(:active) {
+    border: 0.1em #1A1A1A solid;
+}
+
+button.deadd-noti-center.delete-all {
+    margin-bottom: 2px;
+}
+
+button.button-close {
+    background: @close_normal center;
+    margin-right: 0.5em;
+
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
+
+    border-radius: 1em;
+}
+
+button.button-close > label {
+    font-weight: bolder;
+    font-family: monospace;
+    padding: 0em;
+    margin: -1.4em;
+    font-size: 1.4em;
+    color: @close;
+}
+
+button.button-close:hover {
+    background: @close_hover;
+}
+
+button.button-close:active {
+    background: @close_active;
+}
+
+label {
+    color: #eae2e0;
+}
+
+label.notification {
+    color: #fef3f6;
+}
+
+label.critical {
+    color: #FFF;
+}
+
+button.buttonState1 {
+    background: rgba(46, 179, 152, 0.5);
+}
+
+button.buttonState2 {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.userbuttonlabel.buttonState1 {
+    color: #fff;
+}
+
+.userbuttonlabel.buttonState2 {
+    color: #fff;
+}
+
+button.buttonState1:hover {
+    background: rgba(34, 43, 46, 0.4);
+}
+
+button.buttonState2:hover {
+    background: rgba(34, 43, 46, 0.3);
+}
+
+.userbuttonlabel.buttonState1:hover {
+    color: #fee;
+}
+
+.userbuttonlabel.buttonState2:hover {
+    color: #fee;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.appname {
+    font-size: 10px;
+}
+
+.time {
+    font-size: 12px;
+}
+
+.noti-center.time {
+    font-size: 32px;
+}
+#+end_src
+** Notification merging :ARCHIVE:
+#+begin_src css
+.notificationInCenter {
+
+    border-radius: 10px;
+    border: 0px;
+}
+
+/* merge notifications of like-type into single blob */
+.notificationInCenter:not(.critical):not(:first-child) + .notificationInCenter:not(.critical),
+.notificationInCenter.critical:not(:first-child) + .notificationInCenter.critical {
+    margin-top: -30px;
+    border-radius: 0px 0px 10px 10px;
+    padding-top: 10px;
+    border-top: 2px @bg dashed;
+}
+
+/* change blob-buttons to fit accordingly */
+.notificationInCenter:not(.critical):not(:first-child) + .notificationInCenter:not(.critical) .button-close {
+    margin-top: -15px;
+
+}
+.notificationInCenter.critical:not(:first-child) + .notificationInCenter.critical .button-close {
+    margin-top: -15px;
+    border-radius: 0px 0px 10px 10px;
+}
+
+/* make first-child items look proper */
+.notificationInCenter:first-child {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+#+end_src
+
+
+
+#+begin_src css
+
+#+end_src
