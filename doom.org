@@ -23,9 +23,7 @@ StartupWMClass=Emacs
 Shortcut tu running emacs client with my server name (my main emacs is always
 running ~mu4e~ so I named it historically after it).
 
-#+begin_src conf :tangle ~/.local/share/chezmoi/bin/em :tangle-mode (identity #o755)
-#!/bin/bash
-
+#+begin_src conf :tangle ~/.local/share/chezmoi/bin/executable_em :shebang #!/bin/bash
 SERVER_NAME="mu"
 emacsclient -s "${SERVER_NAME}" -a '' -qc "$@"
 #+end_src
