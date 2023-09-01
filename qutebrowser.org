@@ -60,7 +60,7 @@ c.downloads.location.directory = "~/tmpfs"
 ## Same as `{column}`, but starting from index 0.
 ## Type: ShellCommand
 # c.editor.command = ['gvim', '-f', '{file}', '-c', 'normal {line}G{column0}l']
-c.editor.command = ['doom-emacs', '+{line}', '{file}']
+c.editor.command = ['{{ .editor }}', '+{line}', '{file}']
 
 ## CSS selectors used to determine which elements on a page should have
 ## hints.
@@ -219,6 +219,7 @@ c.url.searchengines = {
     "aur": "https://aur.archlinux.org/packages/?O=0&K={}",
     "archwiki": "https://wiki.archlinux.org/index.php?search={}&go=Go",
     "dnsviz": "https://dnsviz.net/d/{}/dnssec/",
+
 }
 
 config.source(
@@ -231,7 +232,7 @@ config.bind(";c", "hint links userscript org-store-link")
 config.bind(",w", "spawn --userscript org-capture-web")
 config.bind(";w", "hint links userscript org-capture-web")
 config.bind(";T", "hint --rapid tickets tab")
-                  
+
 config.bind("<Alt-H>", "tree-tab-promote")
 config.bind("<Alt-J>", "tab-next")
 config.bind("<Alt-K>", "tab-prev")
@@ -279,3 +280,14 @@ https://github.com/sim590/qurlshare
 
 ** TODO link2qr
 https://plaindrops.de/blog/2019/qutebrowser-and-urls-as-qr-codes/
+
+** TODO Kerberos
+See: https://github.com/qutebrowser/qutebrowser/issues/4595#issuecomment-1555913182
+
+#+begin_quote
+For anyone wondering how to apply that option with the CLI: you must use
+--qt-flag. It seems that qutebrowser handles args differently from the config.py
+configuration and from the CLI.
+
+=--qt-flag 'auth-server-whitelist=*.example.org'=
+#+end_quote
