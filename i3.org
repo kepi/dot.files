@@ -50,15 +50,12 @@ setxkbmap cus_klaveska,us -option grp:menu_toggle,ralt_switch,terminate:ctrl_alt
 # Camlink fix
 [ -f /usr/local/lib/camlink/camlink.so ] && export LD_PRELOAD=/usr/local/lib/camlink/camlink.so
 
-# SSH and GPG agent
-GPG_TTY=$TTY
-
+# SSH agent
 # gpg-agent as SSH agent
 unset SSH_AGENT_PID
 if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
   export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 fi
-export GPG_TTY=$(tty)
 gpg-connect-agent updatestartuptty /bye >/dev/null
 
 # Alacritty DPI multi monitor fix
@@ -162,7 +159,7 @@ set $switchws ~/bin/i3-switch-workspace
 bindsym $mod+x [urgent=latest] focus
 
 #set $pass gopass ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | xdotool type --delay 20 --clearmodifiers --file -
-set $pass gopass ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | xdotool type --delay 20 --file -
+set $pass gopass ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | ~/bin/type_as_pw
 bindsym $mod+p exec --no-startup-id $pass
 
 #set $passu gopass ls --flat | rofi -dmenu -p 'User for:' | xargs -I {} --no-run-if-empty gopass show "{}" user | xdotool type --delay 20 --clearmodifiers --file -
@@ -172,12 +169,16 @@ bindsym $mod+u exec --no-startup-id $passu
 set $otp gopass ls --flat otp | rofi -dmenu -p 'OTP for:' | xargs --no-run-if-empty gopass otp | sed 's/ .*//' | xdotool type --clearmodifiers --file -
 bindsym $mod+o exec --no-startup-id $otp
 
-set $multiline ~/bin/xdo_multiple_lines
-bindsym $mod+Shift+m exec --no-startup-id $multiline
+#set $multiline ~/bin/xdo_multiple_lines
+#bindsym $mod+Shift+m exec --no-startup-id $multiline
 
 
 set $menu2 rofi -show drun -show-icons
 bindsym $mod+Shift+d exec $menu2
+
+bindsym $mod+n exec --no-startup-id systemctl --user --signal=USR1 kill deadd-notification-center.service
+bindsym $mod+Shift+n exec --no-startup-id notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearPopups
+bindsym $mod+Alt+n exec --no-startup-id notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearInCenter
 
 set $menu "PATH=$PATH:~/bin rofi -combi-modi drun,run -show combi -modi combi -show-icons -combi-hide-mode-prefix true"
 
@@ -402,7 +403,7 @@ I'm using [[https://github.com/greshake/i3status-rust][i3status-rust]] with pret
 
 #+begin_src conf :tangle ~/.local/share/chezmoi/private_dot_config/i3/status.toml.tmpl
 [icons]
-icons = "awesome"
+icons = "awesome6"
 
 [theme]
 #name = "gruvbox-dark"
@@ -471,17 +472,20 @@ threshold_critical = 20
 
 [[block]]
 block = "memory"
-format_mem = "$mem_used.eng(3,B,M) $mem_avail_percents.eng(2)"
-display_type = "memory"
-clickable = true
+format = "$icon $mem_used.eng(w:3,u:B,p:M) $mem_avail_percents.eng(w:2) "
 interval = 5
 warning_mem = 80
 critical_mem = 95
 
 [[block]]
+block = "kdeconnect"
+format = "$icon {$bat_icon $bat_charge |}{$notif_icon |}"
+
+[[block]]
 block = "time"
 interval = 5
-format = "%a %_d/%m %R"
+[block.format]
+short = "$icon $timestamp.datetime(f:'%a %_d/%m %R') "
 
 #+end_src
 
