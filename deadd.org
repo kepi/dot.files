@@ -51,10 +51,10 @@ notification-center:
 
   ### If true, the notification center will open on the screen, on which
   ### the mouse is. Overrides the "monitor" setting.
-  follow-mouse: true
+  follow-mouse: false
 
   ### Notification center closes when the mouse leaves it
-  hide-on-mouse-leave: true
+  hide-on-mouse-leave: false
 
   ### If newFirst is set to true, newest notifications appear on the top
   ### of the notification center. Else, notifications stack, from top to
