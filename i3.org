@@ -158,6 +158,9 @@ set $switchws ~/bin/i3-switch-workspace
 # jump to urgent window
 bindsym $mod+x [urgent=latest] focus
 
+# toggle mic
+bindsym $mod+m exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+
 #set $pass gopass ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | xdotool type --delay 20 --clearmodifiers --file -
 set $pass gopass ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | ~/bin/type_as_pw
 bindsym $mod+p exec --no-startup-id $pass
@@ -381,7 +384,7 @@ bar {
     tray_output primary
     tray_padding 2
 
-    font pango: Terminus 8
+    font pango: Terminus 9
     colors {
         separator #666666
         background #222222
@@ -401,12 +404,15 @@ bindsym $mod+Shift+i exec --no-startup-id $workspaces_send
 ** status
 I'm using [[https://github.com/greshake/i3status-rust][i3status-rust]] with pretty basic config:
 
+You need to install [[https://gist.github.com/draoncc/3c20d8d4262892ccd2e227eefeafa8ef/raw/3e6e12c213fba1ec28aaa26430c3606874754c30/MaterialIcons-Regular-for-inline.ttf][this material design font]], simply place it to ~/.fonts
+
 #+begin_src conf :tangle ~/.local/share/chezmoi/private_dot_config/i3/status.toml.tmpl
+icons_format = " {icon} "
+
 [icons]
 icons = "awesome6"
 
 [theme]
-#name = "gruvbox-dark"
 theme = "gruvbox-dark"
 
 [theme.overrides]
@@ -447,6 +453,32 @@ device = "{{ .battery_device }}"
 # [[block]]
 # block = "sound"
 # driver = "pulseaudio"
+
+[[block]]
+block = "sound"
+driver = "pulseaudio"
+device_kind = "source"
+format = "$icon {$output_name}"
+
+[block.mappings]
+"alsa_input.usb-Blue_Microphones_Blue_Snowball_2044BAA02Q78-00.3.analog-stereo" = "Snowball"
+"alsa_input.usb-Elgato_Cam_Link_4K_000591E558000-03.3.analog-stereo" = "Camlink"
+
+[block.theme_overrides]
+idle_fg = { link = "critical_fg" }
+idle_bg = { link = "critical_bg" }
+warning_fg = { link = "idle_fg" }
+warning_bg = { link = "idle_bg" }
+
+[[block]]
+block = "sound"
+driver = "pulseaudio"
+device_kind = "sink"
+format = " $icon {$output_name}"
+
+[block.mappings]
+"alsa_output.pci-0000_0e_00.4.3.analog-stereo" = "Repráky"
+"bluez_output.14_3F_A6_98_6B_63.1" = "Sluchátka"
 
 [[block]]
 block = "maildir"
