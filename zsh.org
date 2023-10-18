@@ -592,6 +592,11 @@ zsh-users/zsh-history-substring-search kind:defer
 davidparsson/zsh-pyenv-lazy
 #+end_src
 
+**** nx completion
+#+begin_src conf
+jscutlery/nx-completion
+#+end_src
+
 *** NVM - Node Version Manager :ARCHIVE:
 #+begin_src conf
 NVM_SYMLINK_CURRENT="true" # nvm use should make a symlink
@@ -602,7 +607,7 @@ lazyload nvm node nodejs gatsby yarn npm npx -- 'source "$NVM_DIR/nvm.sh"'
 I recently switched from NVM to *Nodenv*, as I like idea of shims as I'm used to them from *Rbenv*.
 
 #+begin_src conf
-lazyload nvm node gatsby yarn npm npx tsc -- 'eval "$(nodenv init -)"'
+lazyload nvm node gatsby yarn npm npx tsc nx -- 'eval "$(nodenv init -)"'
 #+end_src
 
 *** Rbenv - Ruby version manager
