@@ -1,0 +1,401 @@
+#+title: Hyprland
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/hypr/hyprland.conf.tmpl
+
+I saw some [[https://hyprland.org/][Hyprland]] screenshots and had to at least give it a go. So lets try
+it.
+
+* Install
+#+begin_src sh
+yay -S kitty hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-kde-agent qt6-wayland hyprpaper gtklock
+#+end_src
+
+- kitty :: terminal app recommended for Hyprland. My session didn't start from SDDM until I installed it, maybe investigate later as I'm not sure why I should have it, I like Alacritty.
+- xdg-desktop-portal-hyprland :: Hyprlands for of XDPW with more features, like window sharing
+- xdg-desktop-portal-gtk :: at least for file picker
+- polkit-kde-agent :: as authentication agent
+- qt6-wayland :: wayland support for qt6
+- eww-wayland :: widgets
+
+* Troubleshooting
+** Share picker doesn’t use the system theme
+https://wiki.hyprland.org/Useful-Utilities/Hyprland-desktop-portal/#share-picker-doesnt-use-the-system-theme
+** GTK Themes and Icons
+Looks like GTK themes and icons are set up in different way than in X, as all GTK apps has default theme for me.
+
+I found out that there is *nwg-look* utility, which you can use to set them up same way as *lxapearance* which I used on X. And looks like it support even X.
+
+#+begin_src sh
+yay -S nwg-look-bin
+#+end_src
+* Configuration
+#+begin_src conf
+# See https://wiki.hyprland.org/Configuring/Monitors/
+monitor=desc:HAT Kamvas Pro 24 0xF0000004,3840x2160@60,0x0,1,transform,3 #,bitdepth,10
+monitor=desc:Dell Inc. DELL P2723DE G1MP1L3,2560x1440@59.95100,2160x0,1,transform,1
+monitor=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,2560x1440@144.00600,3600x0,1
+monitor=desc:Dell Inc. DELL P2723DE B1MP1L3,2560x1440@59.95100,6160x0,1,transform,3
+
+# See https://wiki.hyprland.org/Configuring/Keywords/ for more
+
+# Execute your favorite apps at launch
+exec-once = ironbar & hyprpaper
+exec-once=/usr/lib/polkit-kde-authentication-agent-1
+
+# Source a file (multi-file configs)
+# source = ~/.config/hypr/myColors.conf
+
+# Some default env vars.
+env = XCURSOR_SIZE,18
+env = SSH_AUTH_SOCK,$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh
+
+# For all categories, see https://wiki.hyprland.org/Configuring/Variables/
+input {
+    kb_layout = cus_klaveska,us
+    kb_variant =
+    kb_model = pc104
+    kb_options = grp:menu_toggle,ralt_switch,terminate:ctrl_alt_bksp,grp_led:scroll,ctrl:nocaps
+    kb_rules =
+
+    follow_mouse = 1
+
+    touchpad {
+        natural_scroll = no
+    }
+
+    sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
+}
+
+device:ydotoold-virtual-device {
+    kb_layout = us
+    kb_variant =
+    kb_options =
+}
+
+general {
+    # See https://wiki.hyprland.org/Configuring/Variables/ for more
+
+    gaps_in = 2
+    gaps_out = 2
+    border_size = 1
+    col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
+    col.inactive_border = rgba(595959aa)
+
+    layout = dwindle
+}
+
+decoration {
+    # See https://wiki.hyprland.org/Configuring/Variables/ for more
+
+    rounding = 10
+
+    blur {
+        enabled = yes
+        size = 10
+        passes = 1
+    }
+
+    drop_shadow = yes
+    shadow_range = 4
+    shadow_render_power = 3
+    col.shadow = rgba(1a1a1aee)
+}
+# dracula/hyprland
+general {
+    col.active_border = rgb(44475a) rgb(bd93f9) 90deg
+    col.inactive_border = rgba(44475aaa)
+    # non-gradient alternative
+    #col.active_border = rgb(bd93f9)
+    #col.inactive_border = rgba(44475aaa)
+    #col.group_border = rgba(282a36dd)
+    #col.group_border_active = rgb(bd93f9)
+    # darker alternative
+    #col.active_border = rgb(44475a) # or rgb(6272a4)
+    #col.inactive_border = rgb(282a36)
+    #col.group_border = rgb(282a36)
+    #col.group_border_active = rgb(44475a) # or rgb(6272a4)
+
+}
+decoration {
+    col.shadow = rgba(1E202966)
+    # suggested shadow setting
+    #drop_shadow = yes
+    #shadow_range = 60
+    #shadow_offset = 1 2
+    #shadow_render_power = 3
+    #shadow_scale = 0.97
+}
+#windowrulev2 = bordercolor rgb(ff5555),xwayland:1 # check if window is xwayland
+
+animations {
+    enabled = yes
+
+    # Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
+
+    bezier = myBezier, 0.05, 0.9, 0.1, 1.05
+
+    animation = windows, 1, 7, myBezier
+    animation = windowsOut, 1, 7, default, popin 80%
+    animation = border, 1, 10, default
+    animation = borderangle, 1, 8, default
+    animation = fade, 1, 7, default
+    animation = workspaces, 1, 6, default
+}
+
+dwindle {
+    # See https://wiki.hyprland.org/Configuring/Dwindle-Layout/ for more
+    pseudotile = yes # master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
+    preserve_split = yes # you probably want this
+}
+
+master {
+    # See https://wiki.hyprland.org/Configuring/Master-Layout/ for more
+    new_is_master = true
+}
+
+gestures {
+    # See https://wiki.hyprland.org/Configuring/Variables/ for more
+    workspace_swipe = on
+    workspace_swipe_invert = no
+    workspace_swipe_cancel_ratio = 0.1
+}
+
+group {
+   groupbar {
+       font_size = 10
+       gradients = false
+       col.inactive = rgba(282a36dd)
+       col.active = rgb(bd93f9) rgb(44475a) 90deg
+   }
+}
+
+misc {
+    disable_hyprland_logo = true
+    disable_splash_rendering = true
+    disable_autoreload = false
+}
+
+# Example per-device config
+# See https://wiki.hyprland.org/Configuring/Keywords/#executing for more
+device:epic-mouse-v1 {
+    sensitivity = -0.5
+}
+
+# Example windowrule v1
+# windowrule = float, ^(kitty)$
+# Example windowrule v2
+# windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
+# See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
+
+
+# See https://wiki.hyprland.org/Configuring/Keywords/ for more
+$mainMod = SUPER
+
+# Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
+bind = $mainMod, Q, exec, hyprctl keywoard general:layout "dwindle"
+bind = $mainMod SHIFT, Q, exec, hyprctl keywoard general:layout "master"
+
+bind = $mainMod SHIFT, C, killactive,
+bind = $mainMod, T, togglefloating,
+bind = $mainMod SHIFT, F, fullscreen,
+bind = $mainMod, B, pseudo, # dwindle
+bind = $mainMod, /, togglesplit, # dwindle
+bind = $mainMod, G, togglegroup
+# bind = $mainMod SHIFT, G,
+
+bind = $mainMod, E, submap, exec
+submap=exec
+bind=, T, exec, thunar
+bind=, T, submap,reset
+bind=, escape,submap,reset
+submap=reset
+
+bind = $mainMod, D, exec, rofi -show drun -show-icons
+bind = $mainMod, S, exec, rofi -normal-window -show ssh
+bind = $mainMod, R, exec, remmina_menu
+bind = $mainMod, F, exec, rofi -show window
+
+# notifications
+bind = $mainMod, N, exec, pkill -USR1 deadd-notification-center.service
+bind = $mainMod SHIFT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearPopups
+bind = SUPER+ALT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearInCenter
+
+bind = $mainMod, C, exec, hyprpicker --autocopy --format=hex
+
+bind = $mainMod SHIFT, RETURN, exec, alacritty
+
+# TEST
+bind = $mainMod, escape, togglespecialworkspace
+# bind = $mainMod, C, movetoworkspace, special
+
+# TODO
+bind = ,Print, exec, gtklock
+
+bind = $mainMod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+bind = $mainMod, P, exec, gopass --nosync ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | ydotool type --file=-
+
+bind = $mainMod, U, exec, gopass --nosync ls --flat | rofi -dmenu -p 'User for:' | xargs -I "{}" --no-run-if-empty gopass show '{}' user | ydotool type --file=-
+
+bind = $mainMod, O, exec, gopass --nosync ls --flat otp | rofi -dmenu -p 'OTP for:' | xargs --no-run-if-empty gopass otp | sed 's/ .*//' | ydotool type --file=-
+
+bind = $mainMod, I, exec, hyprctl -j workspaces | jq -r '.[] | .name' | rofi -dmenu -p "Workspace:"  | xargs -r ~/bin/hypr-switch-workspace
+
+bind = $mainMod SHIFT, I, exec, hyprctl -j workspaces | jq -r '.[] | .name' | rofi -dmenu -p "Target workspace:"  | xargs -r hyprctl dispatch movetoworkspacesilent
+
+bind = $mainMod, N, exec, systemctl --user --signal=USR1 kill deadd-notification-center.service
+bind = $mainMod SHIFT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearPopups
+bind = SUPER+ALT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearInCenter
+
+# Move focus with mainMod + motion keys
+bind = $mainMod, H, movefocus, l
+bind = $mainMod, L, movefocus, r
+bind = $mainMod, K, movefocus, u
+bind = $mainMod, J, movefocus, d
+
+bind = SUPER+ALT, J, changegroupactive, f
+bind = SUPER+ALT, L, changegroupactive, f
+bind = SUPER+ALT, K, changegroupactive, b
+bind = SUPER+ALT, H, changegroupactive, b
+
+# Move focus to monitor
+bind = $mainMod, a, focusmonitor, l
+bind = $mainMod, semicolon, focusmonitor, r
+
+# Move window with mainMod + motion keys
+bind = $mainMod SHIFT, h, movewindoworgroup, l
+bind = $mainMod SHIFT, l, movewindoworgroup, r
+bind = $mainMod SHIFT, k, movewindoworgroup, u
+bind = $mainMod SHIFT, j, movewindoworgroup, d
+
+# Switch workspaces with mainMod + [0-9]
+bind = $mainMod, code:10, exec, ~/bin/hypr-switch-workspace 1
+bind = $mainMod, code:11, exec, ~/bin/hypr-switch-workspace 2
+bind = $mainMod, code:12, exec, ~/bin/hypr-switch-workspace 3
+bind = $mainMod, code:13, exec, ~/bin/hypr-switch-workspace 4
+bind = $mainMod, code:14, exec, ~/bin/hypr-switch-workspace 5
+bind = $mainMod, code:15, exec, ~/bin/hypr-switch-workspace 6
+bind = $mainMod, code:16, exec, ~/bin/hypr-switch-workspace 7
+bind = $mainMod, code:17, exec, ~/bin/hypr-switch-workspace 8
+bind = $mainMod, code:18, exec, ~/bin/hypr-switch-workspace 9
+bind = $mainMod, code:19, exec, ~/bin/hypr-switch-workspace 10
+bind = $mainMod, code:20, exec, ~/bin/hypr-switch-workspace 11
+
+# Move active window to a workspace with mainMod + SHIFT + [0-9]
+bind = $mainMod SHIFT, code:10, movetoworkspacesilent, 1
+bind = $mainMod SHIFT, code:11, movetoworkspacesilent, 2
+bind = $mainMod SHIFT, code:12, movetoworkspacesilent, 3
+bind = $mainMod SHIFT, code:13, movetoworkspacesilent, 4
+bind = $mainMod SHIFT, code:14, movetoworkspacesilent, 5
+bind = $mainMod SHIFT, code:15, movetoworkspacesilent, 6
+bind = $mainMod SHIFT, code:16, movetoworkspacesilent, 7
+bind = $mainMod SHIFT, code:17, movetoworkspacesilent, 8
+bind = $mainMod SHIFT, code:18, movetoworkspacesilent, 9
+bind = $mainMod SHIFT, code:19, movetoworkspacesilent, 10
+bind = $mainMod SHIFT, code:20, movetoworkspacesilent, 11
+
+# Scroll through existing workspaces with mainMod + scroll
+bind = $mainMod, mouse_down, workspace, e+1
+bind = $mainMod, mouse_up, workspace, e-1
+
+# Move/resize windows with mainMod + LMB/RMB and dragging
+bindm = $mainMod, mouse:272, movewindow
+bindm = $mainMod, mouse:273, resizewindow
+
+# Window rules
+windowrule = workspace 9 silent,firefox
+windowrule = workspace 8 silent,chrome
+windowrule = workspace name:docs, thunar
+
+#+end_src
+
+** Wallpapers
+
+#+begin_src conf :tangle ~/.local/share/chezmoi/private_dot_config/hypr/hyprpaper.conf.tmpl
+preload = ~/Seafile/Kepiho/Dokumenty/Wallpapers/the-mandalorian-4kartworks-ib-1440x2560.jpg
+preload = ~/Seafile/Kepiho/Dokumenty/Wallpapers/kdc.jpg
+preload = ~/Seafile/Kepiho/Dokumenty/Wallpapers/2560x1440_Witcher3_geralt-trophies.png
+preload = ~/Seafile/Kepiho/Dokumenty/Wallpapers/the-mandalorian-minimalist-art-4k-kj-1440x2560.jpg
+
+wallpaper=desc:HAT Kamvas Pro 24 0xF0000004,~/Seafile/Kepiho/Dokumenty/Wallpapers/the-mandalorian-4kartworks-ib-1440x2560.jpg
+wallpaper=desc:Dell Inc. DELL P2723DE G1MP1L3,~/Seafile/Kepiho/Dokumenty/Wallpapers/kdc.jpg
+wallpaper=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,~/Seafile/Kepiho/Dokumenty/Wallpapers/2560x1440_Witcher3_geralt-trophies.png
+wallpaper=desc:Dell Inc. DELL P2723DE B1MP1L3,~/Seafile/Kepiho/Dokumenty/Wallpapers/the-mandalorian-minimalist-art-4k-kj-1440x2560.jpg
+#+end_src
+** Support scripts
+
+*** Switch Workspace
+#+begin_src sh :tangle ~/.local/share/chezmoi/bin/executable_hypr-switch-workspace :mkdirp yes :shebang #!/bin/bash
+set -euo pipefail
+
+readonly DEBUG=0
+
+which jq >&/dev/null || notify-send --urgency=critical "jq not installed"
+
+debug() {
+    if [[ "$DEBUG" -eq 1 ]]; then
+        notify-send --urgency=low "$1"
+    fi
+}
+
+readonly WWS=$1
+
+[ -n "$WWS" ] || exit 1 # WWS undefined
+
+
+# numeric id
+if [[ "$WWS" =~ ^[0-9]+$ ]]; then
+    ID_FIELD="id"
+    # monitor with WWS
+    MONITOR_WWS=$(hyprctl -j workspaces | jq --arg jq_wws "$WWS" -r '.[]|select(.id == ($ARGS.named.jq_wws | tonumber))|.monitor')
+    WWS_ID="$WWS"
+else
+    ID_FIELD="name"
+    # monitor with WWS
+    MONITOR_WWS=$(hyprctl -j workspaces | jq --arg jq_wws "$WWS" -r '.[]|select(.name == ($ARGS.named.jq_wws))|.monitor')
+    WWS_ID="name:$WWS"
+fi
+
+read -r WS_CURRENT MONITOR_CURRENT <<<$(hyprctl -j activeworkspace | jq -r --arg jq_id_field "$ID_FIELD" --raw-output '"\(.[$jq_id_field]) \(.monitor)"')
+
+# 1. Do nothing if we are already on WWS
+if [[ "$WS_CURRENT" == "$WWS" ]]; then
+    debug "You are already on WS $WWS_ID. Not switching."
+
+# . If WS doesn't exist, create it
+elif [[ -e "$MONITOR_WWS" ]]; then
+    debug "Creating new WS $WWS_ID."
+    hyprctl dispatch workspace "$WWS_ID"
+
+# . If WWS is available on our monitor
+elif [[ "$MONITOR_WWS" == "$MONITOR_CURRENT" ]]; then
+    debug "Switching to WS $WWS_ID on same monitor."
+    hyprctl dispatch workspace "$WWS_ID"
+
+# . If WWS is available on other monitor
+else
+    readonly MONITOR_WWS_ACTIVE_WS=$(hyprctl -j monitors | jq --arg jq_mon "$MONITOR_WWS" --arg jq_id_field "$ID_FIELD" '.[]|select(.name==$ARGS.named.jq_mon)|.activeWorkspace|.[$jq_id_field]')
+
+    # . If WWS is active on other monitor
+    debug "monitor with WWS is $MONITOR_WWS and active ws is $MONITOR_WWS_ACTIVE_WS"
+
+    if [[ "$WWS" == "$MONITOR_WWS_ACTIVE_WS" ]]; then
+        debug "Swapping active workspaces with monitor $MONITOR_WWS."
+        hyprctl dispatch swapactiveworkspaces "$MONITOR_CURRENT $MONITOR_WWS"
+
+    # . If WWS isn't active on other monitor
+    else
+        debug "Fetching workspace $WWS_ID from monitor $MONITOR_WWS."
+        hyprctl --batch "dispatch moveworkspacetomonitor $WWS_ID $MONITOR_CURRENT ; dispatch workspace $WWS_ID"
+    fi
+fi
+#+end_src
+
+
+** Tablet
+
+*** Automatic orientation
+- [[https://github.com/JeanSchoeller/iio-hyprland][GitHub - JeanSchoeller/iio-hyprland: Listen iio-sensor-proxy and auto change ...]]
+
+*** Virtual keyboard
+- [[https://github.com/jjsullivan5196/wvkbd][GitHub - jjsullivan5196/wvkbd: On-screen keyboard for wlroots]]
+
+
