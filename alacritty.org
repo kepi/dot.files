@@ -23,6 +23,8 @@ Anyway no big deal, [[https://github.com/alacritty/alacritty/issues/5076][accord
 ~WINIT_X11_SCALE_FACTOR=1~ environment variable and it works as I want (same as
 /Termite/ before). I'm setting this in .xprofile.
 
+Looks like it works on Wayland without any issue.
+
 * Options
 ** TERM
 This value is used to set the =$TERM= environment variable for each instance of
@@ -161,6 +163,12 @@ foreground = "0x93a1a1"
 
 #+end_src
 
+
+** Transparency
+#+begin_src toml
+[window]
+opacity = 0.9
+#+end_src
 ** Hints
 Ok, this is killer feature I missed and really easy to set up.
 
