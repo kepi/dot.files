@@ -91,6 +91,9 @@ alias help='bash -c help'
 # ARCH linux aliasy
 alias pacitude="pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'"
 alias rename="file-rename"
+
+# GAM
+alias gam=~/apps/gamadv-xtd3/gam
 #+end_src
 
 And of course, load the aliases from =.zshrc=
