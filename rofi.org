@@ -1,5 +1,5 @@
 #+TITLE: Rofi Launcher
-#+PROPERTY: header-args:conf :comments no :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/rofi/config.rasi
+#+PROPERTY: header-args:conf :comments no :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/rofi/config.rasi.tmpl
 
 * Install
 ** Arch Linux
@@ -24,7 +24,7 @@ configuration {
   modi: "run,drun,ssh,keys,window";
   show-icons: true;
   terminal: "/usr/bin/alacritty";
-  ssh-command: "{terminal} -e sshr {host}";
+  ssh-command: "{terminal} -e {{ .chezmoi.homeDir }}/bin/sshr {host}";
   sort: true;
   parse-hosts: false;
   parse-known-hosts: true;
