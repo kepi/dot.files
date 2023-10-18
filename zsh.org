@@ -20,7 +20,7 @@ Apart of obvious /zsh/, I also need /exa/ which I'm using instead of /ls/ and
 ** Arch Linux
 #+begin_src conf :tangle etc/yupfiles/zsh.yup
 zsh latest noaur
-exa latest noaur
+eza latest noaur
 fzf latest noaur
 #+end_src
 
@@ -52,10 +52,10 @@ alias rm='rm -i'
 alias mv='mv -i'
 
 # sane ls
-alias ll='exa -l'
-alias l='exa -l'
-alias ls='exa'
-alias la='exa -la'
+alias ll='eza -l'
+alias l='eza -l'
+alias ls='eza'
+alias la='eza -la'
 
 # ask before quit in ncdu
 alias ncdu='ncdu --confirm-quit'
