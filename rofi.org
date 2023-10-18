@@ -5,7 +5,6 @@
 ** Arch Linux
 #+begin_src conf :tangle etc/yupfiles/rofi.yup
 rofi-lbonn-wayland-git latest aur
-rofi-calc latest noaur
 #+end_src
 
 ** TODO Add theme to chezmoi
@@ -22,7 +21,7 @@ config format.
 
 #+begin_src conf
 configuration {
-  modi: "run,drun,ssh,keys,calc";
+  modi: "run,drun,ssh,keys,window";
   show-icons: true;
   terminal: "/usr/bin/alacritty";
   ssh-command: "{terminal} -e sshr {host}";
