@@ -6,7 +6,7 @@ it.
 
 * Install
 #+begin_src sh
-yay -S kitty hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-kde-agent qt6-wayland hyprpaper gtklock
+yay -S kitty hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-kde-agent qt6-wayland hyprpaper ironbar-git swayidle swaylock
 #+end_src
 
 - kitty :: terminal app recommended for Hyprland. My session didn't start from SDDM until I installed it, maybe investigate later as I'm not sure why I should have it, I like Alacritty.
@@ -14,7 +14,6 @@ yay -S kitty hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-
 - xdg-desktop-portal-gtk :: at least for file picker
 - polkit-kde-agent :: as authentication agent
 - qt6-wayland :: wayland support for qt6
-- eww-wayland :: widgets
 
 * Troubleshooting
 ** Share picker doesn’t use the system theme
@@ -30,16 +29,42 @@ yay -S nwg-look-bin
 * Configuration
 #+begin_src conf
 # See https://wiki.hyprland.org/Configuring/Monitors/
-monitor=desc:HAT Kamvas Pro 24 0xF0000004,3840x2160@60,0x0,1,transform,3 #,bitdepth,10
+
+# my desktop
+monitor=desc:HAT Kamvas Pro 24 0xF0000004,3840x2160@60,0x0,1,transform,3,bitdepth,10
 monitor=desc:Dell Inc. DELL P2723DE G1MP1L3,2560x1440@59.95100,2160x0,1,transform,1
 monitor=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,2560x1440@144.00600,3600x0,1
 monitor=desc:Dell Inc. DELL P2723DE B1MP1L3,2560x1440@59.95100,6160x0,1,transform,3
 
+# monitor=desc:HAT Kamvas Pro 24 0xF0000004,3840x2160@60,0x0,1
+# monitor=desc:Dell Inc. DELL P2723DE G1MP1L3,2560x1440@59.95100,3840x0,1,transform,1
+# monitor=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,2560x1440@144.00600,5280x0,1
+# monitor=desc:Dell Inc. DELL P2723DE B1MP1L3,2560x1440@59.95100,7840x0,1,transform,3
+
+
+# my surface
+monitor=desc:BOE 0x088B,1920x1280@60,0x0,1
+
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
 
 # Execute your favorite apps at launch
-exec-once = ironbar & hyprpaper
-exec-once=/usr/lib/polkit-kde-authentication-agent-1
+exec-once = ironbar & hyprpaper & seafile-applet & nm-applet & /usr/lib/kdeconnectd
+exec-once = /usr/lib/polkit-kde-authentication-agent-1
+
+# corectrl for amd gpu
+exec-once = corectrl
+
+# dynamic screen configuration
+exec-once = kanshi
+
+# update dbus env for hyprland portal
+exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+
+# lock
+exec-once = swayidle -w
+
+# hyprpm - hypr plugin manager
+exec-once = hyprpm reload -n
 
 # Source a file (multi-file configs)
 # source = ~/.config/hypr/myColors.conf
@@ -126,6 +151,12 @@ decoration {
 }
 #windowrulev2 = bordercolor rgb(ff5555),xwayland:1 # check if window is xwayland
 
+# screen sharing with xwaylandvideobridge - see https://wiki.hyprland.org/Useful-Utilities/Screen-Sharing/
+windowrulev2 = opacity 0.0 override 0.0 override,class:^(xwaylandvideobridge)$
+windowrulev2 = noanim,class:^(xwaylandvideobridge)$
+windowrulev2 = nofocus,class:^(xwaylandvideobridge)$
+windowrulev2 = noinitialfocus,class:^(xwaylandvideobridge)$
+
 animations {
     enabled = yes
 
@@ -186,15 +217,15 @@ device:epic-mouse-v1 {
 # windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
 # See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
 
-
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
 $mainMod = SUPER
 
 # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
-bind = $mainMod, Q, exec, hyprctl keywoard general:layout "dwindle"
-bind = $mainMod SHIFT, Q, exec, hyprctl keywoard general:layout "master"
+bind = $mainMod SHIFT, Q, killactive
 
-bind = $mainMod SHIFT, C, killactive,
+bind = $mainMod, Y, exec, kdeconnect-cli -n kryton --send-clipboard
+
+# bind = $mainMod SHIFT, C, killactive,
 bind = $mainMod, T, togglefloating,
 bind = $mainMod SHIFT, F, fullscreen,
 bind = $mainMod, B, pseudo, # dwindle
@@ -202,12 +233,22 @@ bind = $mainMod, /, togglesplit, # dwindle
 bind = $mainMod, G, togglegroup
 # bind = $mainMod SHIFT, G,
 
+# EXEC SUBMAP START
 bind = $mainMod, E, submap, exec
 submap=exec
+
 bind=, T, exec, thunar
 bind=, T, submap,reset
+
+bind=, C, exec, qalculate-gtk
+bind=, C, submap,reset
+
+bind=, P, exec, gopass pwgen --one-per-line 64 | rofi -dmenu -p "Select password:" | xargs --no-run-if-empty wl-copy
+bind=, P, submap,reset
+
 bind=, escape,submap,reset
 submap=reset
+# EXEC SUBMAP END
 
 bind = $mainMod, D, exec, rofi -show drun -show-icons
 bind = $mainMod, S, exec, rofi -normal-window -show ssh
@@ -219,7 +260,9 @@ bind = $mainMod, N, exec, pkill -USR1 deadd-notification-center.service
 bind = $mainMod SHIFT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearPopups
 bind = SUPER+ALT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearInCenter
 
-bind = $mainMod, C, exec, hyprpicker --autocopy --format=hex
+bind = $mainMod, C, exec, grimblast copy area
+bind = $mainMod SHIFT, C, exec, grimblast save area ~/tmpfs/screenshot.png
+bind = SUPER+ALT, C, exec, hyprpicker --autocopy --format=hex
 
 bind = $mainMod SHIFT, RETURN, exec, alacritty
 
@@ -228,14 +271,16 @@ bind = $mainMod, escape, togglespecialworkspace
 # bind = $mainMod, C, movetoworkspace, special
 
 # TODO
-bind = ,Print, exec, gtklock
+bind = ,Print, exec, /usr/bin/swaylock -f -c 000000
 
 bind = $mainMod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
-bind = $mainMod, P, exec, gopass --nosync ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | ydotool type --file=-
+bind = $mainMod, P, exec, gopass --nosync ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | ydotool type --key-delay=10 --key-hold=10 --file=-
 
-bind = $mainMod, U, exec, gopass --nosync ls --flat | rofi -dmenu -p 'User for:' | xargs -I "{}" --no-run-if-empty gopass show '{}' user | ydotool type --file=-
+bind = $mainMod SHIFT, P, exec, gopass --nosync ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | ydotool type --key-delay=1500 --key-hold=10 --file=-
 
-bind = $mainMod, O, exec, gopass --nosync ls --flat otp | rofi -dmenu -p 'OTP for:' | xargs --no-run-if-empty gopass otp | sed 's/ .*//' | ydotool type --file=-
+bind = $mainMod, U, exec, gopass --nosync ls --flat | rofi -dmenu -p 'User for:' | xargs -I "{}" --no-run-if-empty gopass show '{}' user | ydotool type --key-delay=10 --key-hold=10 --file=-
+
+bind = $mainMod, O, exec, gopass --nosync ls --flat otp | rofi -dmenu -p 'OTP for:' | xargs --no-run-if-empty gopass otp | sed 's/ .*//' | ydotool type --key-delay=10 --key-hold=10 --file=-
 
 bind = $mainMod, I, exec, hyprctl -j workspaces | jq -r '.[] | .name' | rofi -dmenu -p "Workspace:"  | xargs -r ~/bin/hypr-switch-workspace
 
@@ -303,6 +348,7 @@ bindm = $mainMod, mouse:273, resizewindow
 # Window rules
 windowrule = workspace 9 silent,firefox
 windowrule = workspace 8 silent,chrome
+windowrule = workspace 10 silent,title:CoreCtrl
 windowrule = workspace name:docs, thunar
 
 #+end_src
@@ -397,5 +443,3 @@ fi
 
 *** Virtual keyboard
 - [[https://github.com/jjsullivan5196/wvkbd][GitHub - jjsullivan5196/wvkbd: On-screen keyboard for wlroots]]
-
-
