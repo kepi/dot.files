@@ -22,7 +22,6 @@ gopass latest noaur
        notifications = false
        exportkeys = false
        cliptimeout = 45
-       showsafecontent = true
        nopager = false
        autoimport = true
        autoclip = false
@@ -36,4 +35,8 @@ gopass latest noaur
        path = {{ $dir }}
 {{-   end }}
 {{- end }}
+[show]
+       safecontent = true
+[generate]
+       autoclip = false
 #+end_src
