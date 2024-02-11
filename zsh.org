@@ -610,7 +610,15 @@ lazyload nvm node nodejs gatsby yarn npm npx -- 'source "$NVM_DIR/nvm.sh"'
 I recently switched from NVM to *Nodenv*, as I like idea of shims as I'm used to them from *Rbenv*.
 
 #+begin_src conf
-lazyload nvm node gatsby yarn npm npx tsc nx -- 'eval "$(nodenv init -)"'
+eval "$(nodenv init - --no-rehash zsh)"
+#+end_src
+
+I stopped using lazy loading for Nodenv as I need it to load before PNPM.
+
+*** PNPM
+#+begin_src conf
+export PNPM_HOME="/home/kepi/.local/share/pnpm"
+export PATH="$PNPM_HOME:$PATH"
 #+end_src
 
 *** Rbenv - Ruby version manager
