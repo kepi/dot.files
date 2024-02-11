@@ -1,0 +1,10 @@
+#+title: Swayidle
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/swayidle/config.tmpl
+
+#+begin_src conf
+timeout 300 "loginctl lock-sessions"
+before-sleep "loginctl lock-sessions"
+lock "swaylock -f"
+timeout 600 "hyprctl dispatch dpms off" resume "hyprctl dispatch dpms on"
+
+#+end_src

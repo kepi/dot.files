@@ -1,0 +1,45 @@
+#+title: Swaylock
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/swaylock/config.tmpl
+
+#+begin_src conf
+scaling=stretch
+image=~/.config/wallpaper.png
+show-failed-attempts
+
+# velikost celého indikátoru
+indicator-radius=90
+
+# tloušťka vnějšího kroužku
+indicator-thickness=20
+
+# background
+color=000000
+
+# ring je vnější kroužek
+ring-color=ffffff00
+ring-clear-color=ffffff00
+ring-wrong-color=ffffff00
+ring-ver-color=ffffff00
+
+# text uvnitř
+text-color=ffffff77
+text-clear-color=ffffff77
+text-wrong-color=ffffff77
+text-ver-color=ffffff77
+
+# čárka mezi vnitřním a vnějším kroužkem
+line-color=ffffff00
+line-clear-color=ffffff00
+line-ver-color=ffffff00
+line-wrong-color=ffffff00
+
+# čárky mezi segmenty
+separator-color=00000000
+
+# vnitřní kolečko
+inside-color=00000000
+inside-clear-color=00000000
+inside-ver-color=00000000
+inside-wrong-color=00000000
+
+#+end_src
