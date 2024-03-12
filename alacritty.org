@@ -8,7 +8,7 @@ I used so far.
 ** Arch Linux
 #+begin_src conf :tangle etc/yupfiles/alacritty.yup
 alacritty-git latest aur
-nerd-fonts-inconsolata-go latest aur
+ttf-inconsolata-go-nerd latest aur
 #+end_src
 
 * Multiple Monitors with different DPI
