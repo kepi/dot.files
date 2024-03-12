@@ -1,5 +1,5 @@
 #+title: Hyprland
-#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/hypr/hyprland.conf.tmpl
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/hypr/hyprland.conf.tmpl
 
 I saw some [[https://hyprland.org/][Hyprland]] screenshots and had to at least give it a go. So lets try
 it.
@@ -18,6 +18,7 @@ yay -S kitty hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-
 * Troubleshooting
 ** Share picker doesn’t use the system theme
 https://wiki.hyprland.org/Useful-Utilities/Hyprland-desktop-portal/#share-picker-doesnt-use-the-system-theme
+
 ** GTK Themes and Icons
 Looks like GTK themes and icons are set up in different way than in X, as all GTK apps has default theme for me.
 
@@ -26,21 +27,22 @@ I found out that there is *nwg-look* utility, which you can use to set them up s
 #+begin_src sh
 yay -S nwg-look-bin
 #+end_src
+
 * Configuration
 #+begin_src conf
 # See https://wiki.hyprland.org/Configuring/Monitors/
 
 # my desktop
-monitor=desc:HAT Kamvas Pro 24 0xF0000004,3840x2160@60,0x0,1,transform,3,bitdepth,10
-monitor=desc:Dell Inc. DELL P2723DE G1MP1L3,2560x1440@59.95100,2160x0,1,transform,1
-monitor=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,2560x1440@144.00600,3600x0,1
-monitor=desc:Dell Inc. DELL P2723DE B1MP1L3,2560x1440@59.95100,6160x0,1,transform,3
+# monitor=desc:HAT Kamvas Pro 24 0xF0000004,3840x2160@60,0x0,1,transform,3,bitdepth,10
+# # monitor=desc:HAT Kamvas Pro 24 0xF0000004,disable
+# monitor=desc:Dell Inc. DELL P2723DE G1MP1L3,2560x1440@59.95100,2160x0,1,transform,1
+# monitor=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,2560x1440@144.00600,3600x0,1
+# monitor=desc:Dell Inc. DELL P2723DE B1MP1L3,2560x1440@59.95100,6160x0,1,transform,3
 
-# monitor=desc:HAT Kamvas Pro 24 0xF0000004,3840x2160@60,0x0,1
-# monitor=desc:Dell Inc. DELL P2723DE G1MP1L3,2560x1440@59.95100,3840x0,1,transform,1
-# monitor=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,2560x1440@144.00600,5280x0,1
-# monitor=desc:Dell Inc. DELL P2723DE B1MP1L3,2560x1440@59.95100,7840x0,1,transform,3
-
+monitor=desc:HAT Kamvas Pro 24 0xF0000004,3840x2160@60,0x0,1
+monitor=desc:Dell Inc. DELL P2723DE G1MP1L3,2560x1440@59.95100,3840x0,1,transform,1
+monitor=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,2560x1440@144.00600,5280x0,1
+monitor=desc:Dell Inc. DELL P2723DE B1MP1L3,2560x1440@59.95100,7840x0,1,transform,3
 
 # my surface
 monitor=desc:BOE 0x088B,1920x1280@60,0x0,1
@@ -82,6 +84,7 @@ input {
     kb_rules =
 
     follow_mouse = 1
+    mouse_refocus = true
 
     touchpad {
         natural_scroll = no
@@ -105,7 +108,7 @@ general {
     col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
     col.inactive_border = rgba(595959aa)
 
-    layout = dwindle
+    layout = hy3
 }
 
 decoration {
@@ -151,12 +154,6 @@ decoration {
 }
 #windowrulev2 = bordercolor rgb(ff5555),xwayland:1 # check if window is xwayland
 
-# screen sharing with xwaylandvideobridge - see https://wiki.hyprland.org/Useful-Utilities/Screen-Sharing/
-windowrulev2 = opacity 0.0 override 0.0 override,class:^(xwaylandvideobridge)$
-windowrulev2 = noanim,class:^(xwaylandvideobridge)$
-windowrulev2 = nofocus,class:^(xwaylandvideobridge)$
-windowrulev2 = noinitialfocus,class:^(xwaylandvideobridge)$
-
 animations {
     enabled = yes
 
@@ -190,19 +187,76 @@ gestures {
     workspace_swipe_cancel_ratio = 0.1
 }
 
-group {
-   groupbar {
-       font_size = 10
-       gradients = false
-       col.inactive = rgba(282a36dd)
-       col.active = rgb(bd93f9) rgb(44475a) 90deg
-   }
-}
+# group {
+#    groupbar {
+#        font_size = 10
+#        gradients = false
+#        col.inactive = rgba(282a36dd)
+#        col.active = rgb(bd93f9) rgb(44475a) 90deg
+#    }
+# }
 
 misc {
     disable_hyprland_logo = true
     disable_splash_rendering = true
     disable_autoreload = false
+}
+
+plugin {
+    hy3 {
+        tabs {
+            height = 15
+            padding = 5
+            from_top = true
+            rounding = 10
+            render_text = true
+            text_center = true
+            text_padding = 3
+
+            # active tab bar segment color
+            col.active = 0xdf32b4ff
+
+            # urgent tab bar segment color
+            col.urgent = 0xffff4f4f
+
+            # inactive tab bar segment color
+            col.inactive = 0xdd282a36
+
+            # active tab bar text color
+            col.text.active = 0xff000000
+
+            # urgent tab bar text color
+            col.text.urgent = 0xff000000
+
+            # inactive tab bar text color
+            col.text.inactive = 0xff32b4ff
+        }
+
+        autotile {
+            enable = true
+            trigger_width = 800
+            trigger_height = 500
+        }
+    }
+
+        hyprfocus {
+            enabled = false
+
+            keyboard_focus_animation = shrink
+
+            bezier = bezIn, 0.5,0.0,1.0,0.5
+            bezier = bezOut, 0.0,0.5,0.5,1.0
+
+            shrink {
+                shrink_percentage = 0.99
+
+                in_bezier = bezIn
+                in_speed = 1
+
+                out_bezier = bezOut
+                out_speed = 3
+            }
+        }
 }
 
 # Example per-device config
@@ -211,27 +265,53 @@ device:epic-mouse-v1 {
     sensitivity = -0.5
 }
 
-# Example windowrule v1
-# windowrule = float, ^(kitty)$
-# Example windowrule v2
-# windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
+# Window rules
 # See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
+# windowrulev2 = tile,title:^(Playwright Test)$
+windowrulev2 = workspace 8 silent,class:chrome
+windowrulev2 = nomaximizerequest,class:^(libreoffice.*)$
 
+windowrule = workspace 9 silent,firefox
+windowrule = workspace 10 silent,title:CoreCtrl
+windowrule = workspace name:docs, thunar
+
+windowrulev2 = float,class:(qalculate-gtk)
+windowrulev2 = workspace special:calculator,class:(qalculate-gtk)
+
+# screen sharing with xwaylandvideobridge - see https://wiki.hyprland.org/Useful-Utilities/Screen-Sharing/
+windowrulev2 = opacity 0.0 override 0.0 override,class:^(xwaylandvideobridge)$
+windowrulev2 = noanim,class:^(xwaylandvideobridge)$
+windowrulev2 = nofocus,class:^(xwaylandvideobridge)$
+windowrulev2 = noinitialfocus,class:^(xwaylandvideobridge)$
+
+# Bindings
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
+
+# bind flags
+# l -> locked, aka. works also when an input inhibitor (e.g. a lockscreen) is active.
+# r -> release, will trigger on release of a key.
+# e -> repeat, will repeat when held.
+# n -> non-consuming, key/mouse events will be passed to the active window in addition to triggering the dispatcher.
+# m -> mouse, see below
+# t -> transparent, cannot be shadowed by other binds.
+# i -> ignore mods, will ignore modifiers.
+
+# See https://wiki.hyprland.org/Configuring/Binds/ for bind examples
 $mainMod = SUPER
 
-# Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
-bind = $mainMod SHIFT, Q, killactive
+# qalculate!
+bind = $mainMod, Q, exec, pgrep qalculate-gtk && hyprctl dispatch togglespecialworkspace calculator || qalculate-gtk &
 
+# this will send content of clipboard to my phone over kdeconnect
 bind = $mainMod, Y, exec, kdeconnect-cli -n kryton --send-clipboard
 
-# bind = $mainMod SHIFT, C, killactive,
-bind = $mainMod, T, togglefloating,
-bind = $mainMod SHIFT, F, fullscreen,
-bind = $mainMod, B, pseudo, # dwindle
-bind = $mainMod, /, togglesplit, # dwindle
-bind = $mainMod, G, togglegroup
-# bind = $mainMod SHIFT, G,
+# mute default mic
+bind = $mainMod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+
+# Exec submap is for running apps I'm using often
+# t - thunar
+# c - qalculate
+# p - pwgen
 
 # EXEC SUBMAP START
 bind = $mainMod, E, submap, exec
@@ -250,79 +330,153 @@ bind=, escape,submap,reset
 submap=reset
 # EXEC SUBMAP END
 
+# launchers
 bind = $mainMod, D, exec, rofi -show drun -show-icons
 bind = $mainMod, S, exec, rofi -normal-window -show ssh
 bind = $mainMod, R, exec, remmina_menu
 bind = $mainMod, F, exec, rofi -show window
 
-# notifications
-bind = $mainMod, N, exec, pkill -USR1 deadd-notification-center.service
+# passwords
+# p - type password
+# P - type password slowly (for buggy terminals etc)
+# u - type username
+# o - type otp
+bind = $mainMod, p,       exec, gopass --nosync ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | ydotool type --key-delay=10 --key-hold=10 --file=-
+bind = $mainMod SHIFT, p, exec, gopass --nosync ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -c
+bind = $mainMod, u, exec, gopass --nosync ls --flat | rofi -dmenu -p 'User for:' | xargs -I "{}" --no-run-if-empty gopass show '{}' user | ydotool type --key-delay=10 --key-hold=10 --file=-
+bind = $mainMod, o, exec, gopass --nosync ls --flat otp | rofi -dmenu -p 'OTP for:' | xargs --no-run-if-empty gopass otp | sed 's/ .*//' | ydotool type --key-delay=10 --key-hold=10 --file=-
+
+# notification center
+# show hide
+bind = $mainMod, N, exec, systemctl --user --signal=USR1 kill deadd-notification-center.service
+# clear popups
 bind = $mainMod SHIFT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearPopups
+# clear in center
 bind = SUPER+ALT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearInCenter
 
-bind = $mainMod, C, exec, grimblast copy area
+# screenshot of selected area copied to clipboard
+bind = $mainMod, c, exec, grimblast copy area
+# screenshot of selected area saved to ~/tmpfs/screenshot.png
 bind = $mainMod SHIFT, C, exec, grimblast save area ~/tmpfs/screenshot.png
-bind = SUPER+ALT, C, exec, hyprpicker --autocopy --format=hex
+# color picker
+bind = SUPER+ALT, c, exec, hyprpicker --autocopy --format=hex
 
+# I'm using alacritty as my main terminal
 bind = $mainMod SHIFT, RETURN, exec, alacritty
 
-# TEST
+# special workspace
 bind = $mainMod, escape, togglespecialworkspace
-# bind = $mainMod, C, movetoworkspace, special
+bind = $mainMod SHIFT, escape, movetoworkspace, special
 
-# TODO
-bind = ,Print, exec, /usr/bin/swaylock -f -c 000000
+# lock screen
+bind = ,Print, exec, loginctl lock-session
 
-bind = $mainMod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
-bind = $mainMod, P, exec, gopass --nosync ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | ydotool type --key-delay=10 --key-hold=10 --file=-
+# Layout related binds
+bind = $mainMod SHIFT, Q, hy3:killactive
 
-bind = $mainMod SHIFT, P, exec, gopass --nosync ls --flat | rofi -dmenu -p 'Password for:' | xargs --no-run-if-empty gopass show -o | ydotool type --key-delay=1500 --key-hold=10 --file=-
+bind = $mainMod, g, submap, group
+submap=group
+bind = , h, hy3:makegroup, h
+bind = , h, submap, reset
 
-bind = $mainMod, U, exec, gopass --nosync ls --flat | rofi -dmenu -p 'User for:' | xargs -I "{}" --no-run-if-empty gopass show '{}' user | ydotool type --key-delay=10 --key-hold=10 --file=-
+bind = , v, hy3:makegroup, v
+bind = , v, submap, reset
 
-bind = $mainMod, O, exec, gopass --nosync ls --flat otp | rofi -dmenu -p 'OTP for:' | xargs --no-run-if-empty gopass otp | sed 's/ .*//' | ydotool type --key-delay=10 --key-hold=10 --file=-
+bind = , g, hy3:changegroup, toggletab
+bind = , g, submap, reset
 
+bind = , t, hy3:makegroup, tab
+bind = , t, submap, reset
+
+bind = , u, hy3:changegroup, untab
+bind = , u, submap, reset
+
+bind = , r, hy3:changefocus, raise
+bind = , r, submap, reset
+
+bind = , l, hy3:changefocus, lower
+bind = , l, submap, reset
+
+bind = , e, hy3:expand, expand
+bind = , e, submap, reset
+
+bind = , b, hy3:expand, base
+bind = , b, submap, reset
+
+bind = , o, hy3:changegroup, opposite
+bind = , o, submap, reset
+bind=, escape,submap,reset
+submap=reset
+
+bind = $mainMod, T, togglefloating,
+bind = $mainMod SHIFT, F, fullscreen,
+bind = $mainMod, B, pseudo, # dwindle
+bind = $mainMod, /, togglesplit, # dwindle
+# bind = $mainMod, G, togglegroup
+# bind = $mainMod SHIFT, G,
+
+# switch to workspace selected from list
 bind = $mainMod, I, exec, hyprctl -j workspaces | jq -r '.[] | .name' | rofi -dmenu -p "Workspace:"  | xargs -r ~/bin/hypr-switch-workspace
 
+# move window to workspace selected from list
 bind = $mainMod SHIFT, I, exec, hyprctl -j workspaces | jq -r '.[] | .name' | rofi -dmenu -p "Target workspace:"  | xargs -r hyprctl dispatch movetoworkspacesilent
 
-bind = $mainMod, N, exec, systemctl --user --signal=USR1 kill deadd-notification-center.service
-bind = $mainMod SHIFT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearPopups
-bind = SUPER+ALT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearInCenter
-
 # Move focus with mainMod + motion keys
-bind = $mainMod, H, movefocus, l
-bind = $mainMod, L, movefocus, r
-bind = $mainMod, K, movefocus, u
-bind = $mainMod, J, movefocus, d
+bind = $mainMod, H, hy3:movefocus, l
+bind = $mainMod, L, hy3:movefocus, r
+bind = $mainMod, K, hy3:movefocus, u
+bind = $mainMod, J, hy3:movefocus, d
 
-bind = SUPER+ALT, J, changegroupactive, f
-bind = SUPER+ALT, L, changegroupactive, f
-bind = SUPER+ALT, K, changegroupactive, b
-bind = SUPER+ALT, H, changegroupactive, b
+# bind = $mainMod+ALT, J, changegroupactive, f
+# bind = $mainMod+ALT, L, changegroupactive, f
+# bind = $mainMod+ALT, K, changegroupactive, b
+# bind = $mainMod+ALT, H, changegroupactive, b
 
 # Move focus to monitor
 bind = $mainMod, a, focusmonitor, l
 bind = $mainMod, semicolon, focusmonitor, r
 
+# What does dis do? move focus only to visible?
+bind = $mainMod+ALT, h, hy3:movefocus, l, visible
+bind = $mainMod+ALT, j, hy3:movefocus, d, visible
+bind = $mainMod+ALT, k, hy3:movefocus, u, visible
+bind = $mainMod+ALT, l, hy3:movefocus, r, visible
+
+bind = $mainMod+ALT+SHIFT, h, hy3:movewindow, l, once, visible
+bind = $mainMod+ALT+SHIFT, j, hy3:movewindow, d, once, visible
+bind = $mainMod+ALT+SHIFT, k, hy3:movewindow, u, once, visible
+bind = $mainMod+ALT+SHIFT, l, hy3:movewindow, r, once, visible
+
+# focus tab by index
+bind = $mainMod+ALT, code:10, hy3:focustab, index, 01
+bind = $mainMod+ALT, code:11, hy3:focustab, index, 02
+bind = $mainMod+ALT, code:12, hy3:focustab, index, 03
+bind = $mainMod+ALT, code:13, hy3:focustab, index, 04
+bind = $mainMod+ALT, code:14, hy3:focustab, index, 05
+bind = $mainMod+ALT, code:15, hy3:focustab, index, 06
+bind = $mainMod+ALT, code:16, hy3:focustab, index, 07
+bind = $mainMod+ALT, code:17, hy3:focustab, index, 08
+bind = $mainMod+ALT, code:18, hy3:focustab, index, 09
+bind = $mainMod+ALT, code:19, hy3:focustab, index, 10
+
 # Move window with mainMod + motion keys
-bind = $mainMod SHIFT, h, movewindoworgroup, l
-bind = $mainMod SHIFT, l, movewindoworgroup, r
-bind = $mainMod SHIFT, k, movewindoworgroup, u
-bind = $mainMod SHIFT, j, movewindoworgroup, d
+bind = $mainMod SHIFT, h, hy3:movewindow, l
+bind = $mainMod SHIFT, l, hy3:movewindow, r
+bind = $mainMod SHIFT, k, hy3:movewindow, u
+bind = $mainMod SHIFT, j, hy3:movewindow, d
 
 # Switch workspaces with mainMod + [0-9]
-bind = $mainMod, code:10, exec, ~/bin/hypr-switch-workspace 1
-bind = $mainMod, code:11, exec, ~/bin/hypr-switch-workspace 2
-bind = $mainMod, code:12, exec, ~/bin/hypr-switch-workspace 3
-bind = $mainMod, code:13, exec, ~/bin/hypr-switch-workspace 4
-bind = $mainMod, code:14, exec, ~/bin/hypr-switch-workspace 5
-bind = $mainMod, code:15, exec, ~/bin/hypr-switch-workspace 6
-bind = $mainMod, code:16, exec, ~/bin/hypr-switch-workspace 7
-bind = $mainMod, code:17, exec, ~/bin/hypr-switch-workspace 8
-bind = $mainMod, code:18, exec, ~/bin/hypr-switch-workspace 9
-bind = $mainMod, code:19, exec, ~/bin/hypr-switch-workspace 10
-bind = $mainMod, code:20, exec, ~/bin/hypr-switch-workspace 11
+bind = $mainMod, code:10, focusworkspaceoncurrentmonitor, 1
+bind = $mainMod, code:11, focusworkspaceoncurrentmonitor, 2
+bind = $mainMod, code:12, focusworkspaceoncurrentmonitor, 3
+bind = $mainMod, code:13, focusworkspaceoncurrentmonitor, 4
+bind = $mainMod, code:14, focusworkspaceoncurrentmonitor, 5
+bind = $mainMod, code:15, focusworkspaceoncurrentmonitor, 6
+bind = $mainMod, code:16, focusworkspaceoncurrentmonitor, 7
+bind = $mainMod, code:17, focusworkspaceoncurrentmonitor, 8
+bind = $mainMod, code:18, focusworkspaceoncurrentmonitor, 9
+bind = $mainMod, code:19, focusworkspaceoncurrentmonitor, 10
+bind = $mainMod, code:20, focusworkspaceoncurrentmonitor, 11
 
 # Move active window to a workspace with mainMod + SHIFT + [0-9]
 bind = $mainMod SHIFT, code:10, movetoworkspacesilent, 1
@@ -337,19 +491,14 @@ bind = $mainMod SHIFT, code:18, movetoworkspacesilent, 9
 bind = $mainMod SHIFT, code:19, movetoworkspacesilent, 10
 bind = $mainMod SHIFT, code:20, movetoworkspacesilent, 11
 
-# Scroll through existing workspaces with mainMod + scroll
-bind = $mainMod, mouse_down, workspace, e+1
-bind = $mainMod, mouse_up, workspace, e-1
-
 # Move/resize windows with mainMod + LMB/RMB and dragging
-bindm = $mainMod, mouse:272, movewindow
+bindm = $mainMod, mouse:272, hy3:movewindow
 bindm = $mainMod, mouse:273, resizewindow
 
-# Window rules
-windowrule = workspace 9 silent,firefox
-windowrule = workspace 8 silent,chrome
-windowrule = workspace 10 silent,title:CoreCtrl
-windowrule = workspace name:docs, thunar
+# focus and switch between tabs with mouse
+bindn = , mouse:272, hy3:focustab, mouse
+bindn = , mouse_down, hy3:focustab, l, require_hovered
+bindn = , mouse_up, hy3:focustab, r, require_hovered
 
 #+end_src
 
@@ -367,8 +516,9 @@ wallpaper=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,~/Seafile/Kepiho/Dok
 wallpaper=desc:Dell Inc. DELL P2723DE B1MP1L3,~/Seafile/Kepiho/Dokumenty/Wallpapers/the-mandalorian-minimalist-art-4k-kj-1440x2560.jpg
 #+end_src
 ** Support scripts
+*** Switch Workspace :ARCHIVE:
+No longer needed, as hyprland has Xmonad style =focusworkspaceoncurrentmonitor= dispatcher now. Yay!
 
-*** Switch Workspace
 #+begin_src sh :tangle ~/.local/share/chezmoi/bin/executable_hypr-switch-workspace :mkdirp yes :shebang #!/bin/bash
 set -euo pipefail
 
