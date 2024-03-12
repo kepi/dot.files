@@ -67,6 +67,9 @@ exec-once = swayidle -w
 
 # hyprpm - hypr plugin manager
 exec-once = hyprpm reload -n
+# I have to always reload hyprctl on start because of hy3 - this should work
+# around it
+exec-once = hyprctl reload
 
 # Source a file (multi-file configs)
 # source = ~/.config/hypr/myColors.conf
