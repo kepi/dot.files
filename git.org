@@ -1,5 +1,5 @@
 #+TITLE: Git
-#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/dot_gitconfig.tmpl
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/dot_gitconfig.tmpl
 
 #+begin_src conf
 [user]

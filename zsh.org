@@ -1,5 +1,5 @@
 #+TITLE: ZSH
-#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/dot_zshrc.tmpl
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/dot_zshrc.tmpl
 
 Some time ago, I trashed my precious ZSH config and try to moved to /zinit/. As
 I needed working version quickly, I used [[https://github.com/romkatv/zsh4humans][zsh4humans]] as base and tried to built

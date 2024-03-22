@@ -1,5 +1,5 @@
 #+title: Yay
-#+PROPERTY: header-args:json :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/yay/config.json
+#+PROPERTY: header-args:json :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/yay/config.json
 
 #+begin_src json
 {

@@ -1,5 +1,5 @@
 #+TITLE: Qutebrowser
-#+PROPERTY: header-args:python :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/qutebrowser/config.py.tmpl
+#+PROPERTY: header-args:python :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/qutebrowser/config.py.tmpl
 
 * Install
 ** Arch Linux

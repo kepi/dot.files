@@ -1,5 +1,5 @@
 #+TITLE: Alacritty
-#+PROPERTY: header-args:toml :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/alacritty/alacritty.toml
+#+PROPERTY: header-args:toml :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/alacritty/alacritty.toml
 
 [[https://github.com/alacritty/alacritty][Alacritty]] is cross-platform, OpenGL terminal emulator superseding [[./termite.org][Termite]] which
 I used so far.

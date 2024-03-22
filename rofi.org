@@ -1,5 +1,5 @@
 #+TITLE: Rofi Launcher
-#+PROPERTY: header-args:conf :comments no :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/rofi/config.rasi.tmpl
+#+PROPERTY: header-args:conf :comments no :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/rofi/config.rasi.tmpl
 
 * Install
 ** Arch Linux

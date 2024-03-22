@@ -1,5 +1,5 @@
 #+TITLE: Deadd Notification Center
-#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/deadd/deadd.yml.tmpl
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/deadd/deadd.yml.tmpl
 
 [[https://github.com/phuhl/linux_notification_center][Deadd]] is desktop notification daemon inspired by [[./dunst.org][Dunst]] written in Haskell. I used /Dunst/ for many years. But I started to experiment with connecting my mobile phone through /Kde connect/ and realized, that I want to have something like notification center. And looks like /Deadd/ can do it, is heavily configurable and might be working just ok.
 

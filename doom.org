@@ -1,5 +1,5 @@
 #+title: Doom Emacs
-#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes
 
 Just couple helper settings for my Doom setup.
 

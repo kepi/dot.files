@@ -1,6 +1,6 @@
 #+TITLE: Bootstrap Arch Linux
 #+PROPERTY: header-args:sh :comments link :tangle-mode (identity #o755) :mkdirp yes :tangle bin/bootstrap_arch :shebang
-#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes
 
 Install packages I'm using on /Arch Linux/.
 

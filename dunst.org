@@ -1,5 +1,5 @@
 #+TITLE: Dunst
-#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/dunst/dunstrc.tmpl
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/dunst/dunstrc.tmpl
 
 [[https://dunst-project.org/][Dunst]] (not /Kirsten/) is a highly configurable and lightweight notification daemon.
 

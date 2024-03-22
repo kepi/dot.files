@@ -1,5 +1,5 @@
 #+TITLE: Gopass or pass
-#+PROPERTY: header-args:conf :comments no :tangle-mode (identity #o400) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/gopass/config.tmpl
+#+PROPERTY: header-args:conf :comments no :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/gopass/config.tmpl
 
 /Password store/ and it's alternative /Gopass/ are nice cmdline password managers.
 
