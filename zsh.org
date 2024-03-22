@@ -629,6 +629,21 @@ lazyload ruby rbenv gem bundle -- 'eval "$($HOME/.rbenv/bin/rbenv init --no-reha
 
 or just use [[github:ELLIOTTCABLE/rbenv.plugin.zsh]]
 
+
+
+*** Envkey
+#+begin_src conf
+_envkey_yargs_completions()
+{
+  local reply
+  local si=$IFS
+  IFS=$'
+' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" ../../../bin/envkey --get-yargs-completions "${words[@]}"))
+  IFS=$si
+  _describe 'values' reply
+}
+compdef _envkey_yargs_completions envkey
+#+end_src
 * Using on different user@server
 I'm using many app users on different servers, when I want same ZSH config, it should be enough to do something like:
 
