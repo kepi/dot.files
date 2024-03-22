@@ -207,7 +207,9 @@ c.tabs.width = 350
 ## qutebrowser`.
 ## Type: Dict
 c.url.searchengines = {
-    "DEFAULT": "https://duckduckgo.com/?q={}",
+    "DEFAULT": "https://kagi.com/search?q={}",
+    "kagi": "https://kagi.com/search?q={}",
+    "ddg": "https://duckduckgo.com/?q={}",
     "deb": "https://packages.debian.org/search?keywords={}&searchon=names&suite=all&section=all",
     "headers": "https://securityheaders.io/?q={}&hide=on&followRedirects=on",
     "sc": "https://github.com/koalaman/shellcheck/wiki/SC{}",
@@ -219,7 +221,6 @@ c.url.searchengines = {
     "aur": "https://aur.archlinux.org/packages/?O=0&K={}",
     "archwiki": "https://wiki.archlinux.org/index.php?search={}&go=Go",
     "dnsviz": "https://dnsviz.net/d/{}/dnssec/",
-
 }
 
 config.source(
