@@ -6,7 +6,7 @@ it.
 
 * Install
 #+begin_src sh
-yay -S kitty hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-kde-agent qt6-wayland hyprpaper ironbar-git swayidle swaylock nwg-look-bin qt6ct kvantum
+yay -S kitty hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-kde-agent qt6-wayland hyprpaper swayidle swaylock nwg-look-bin qt6ct kvantum
 #+end_src
 
 - kitty :: terminal app recommended for Hyprland. My session didn't start from SDDM until I installed it, maybe investigate later as I'm not sure why I should have it, I like Alacritty.
@@ -14,6 +14,9 @@ yay -S kitty hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-
 - xdg-desktop-portal-gtk :: at least for file picker
 - polkit-kde-agent :: as authentication agent
 - qt6-wayland :: wayland support for qt6
+
+** Screenshots
+Script in [[./scripts/screenshot.sh.org][screenshot.sh]]
 
 * Troubleshooting
 ** Share picker doesn’t use the system theme
@@ -33,6 +36,14 @@ I'm settings theme with *qt6ct*, there I set style to *kvantum*. And with
 For *qt6ct* to work, you need to set =QT_QPA_PLATFORMTHEME=qt6ct= variable.
 
 * Configuration
+** XDG portal configuration
+#+begin_src conf :tangle ~/.local/share/chezmoi/private_dot_config/xdg-desktop-portal/hyprland-portals.conf
+[preferred]
+default=hyprland;gtk
+#+end_src
+
+** Hyprland
+
 #+begin_src conf
 # See https://wiki.hyprland.org/Configuring/Monitors/
 
@@ -40,6 +51,8 @@ For *qt6ct* to work, you need to set =QT_QPA_PLATFORMTHEME=qt6ct= variable.
 # plugin = /usr/lib/libhy3.so
 
 # my desktop
+# {{ .chezmoi.hostname }}
+{{ if eq .chezmoi.hostname "kocour" }}
 monitor=desc:HAT Kamvas Pro 24 0xF0000004,3840x2160@60,0x0,1,transform,3,bitdepth,10
 monitor=desc:Dell Inc. DELL P2723DE G1MP1L3,2560x1440@59.95100,2160x0,1,transform,1
 monitor=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,2560x1440@144.00600,3600x0,1
@@ -48,21 +61,35 @@ monitor=desc:Dell Inc. DELL P2723DE B1MP1L3,2560x1440@59.95100,6160x0,1,transfor
 # monitor=desc:Dell Inc. DELL P2723DE G1MP1L3,2560x1440@59.95100,3840x0,1,transform,1
 # monitor=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,2560x1440@144.00600,5280x0,1
 # monitor=desc:Dell Inc. DELL P2723DE B1MP1L3,2560x1440@59.95100,7840x0,1,transform,3
-
+{{ else if eq .chezmoi.hostname "midget" }}
 # my surface
 monitor=desc:BOE 0x088B,1920x1280@60,0x0,1
-
+{{ end }}
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
 
 # Execute your favorite apps at launch
-exec-once = ironbar & hyprpaper & seafile-applet & nm-applet & /usr/lib/kdeconnectd
+# hyprpm - hypr plugin manager
+exec-once = hyprpm reload -n
+
+# I have to always reload hyprctl on start because of hy3 - this should work
+# around it
+#exec-once = hyprctl reload
+
+#exec-once = ironbar
+exec-once = waybar
+
+exec-once = hyprpaper
+exec-once = seafile-applet
+exec-once = nm-applet
+exec-once = /usr/lib/kdeconnectd
 exec-once = /usr/lib/polkit-kde-authentication-agent-1
 
 # corectrl for amd gpu
-exec-once = corectrl
+exec-once = [workspace 0 silent] corectrl
 
 # dynamic screen configuration
-exec-once = kanshi
+# FIXME: disabling
+#exec-once = kanshi
 
 # update dbus env for hyprland portal
 exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
@@ -70,12 +97,7 @@ exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CUR
 # lock
 exec-once = swayidle -w
 
-# hyprpm - hypr plugin manager
-exec-once = hyprpm reload -n
-# I have to always reload hyprctl on start because of hy3 - this should work
-# around it
-exec-once = hyprctl reload
-
+# clipboard manager
 exec-once = wl-paste --type text --watch cliphist store #Stores only text data
 exec-once = wl-paste --type image --watch cliphist store #Stores only image data
 
@@ -85,7 +107,13 @@ exec-once = wl-paste --type image --watch cliphist store #Stores only image data
 # Some default env vars.
 env = XCURSOR_SIZE,18
 env = SSH_AUTH_SOCK,$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh
+
+# theme for QT apps
 env = QT_QPA_PLATFORMTHEME,qt6ct
+
+# dark theme for GTK apps
+exec = gsettings set org.gnome.desktop.interface gtk-theme "Adapta-Nokto-Eta"   # for GTK3 apps
+exec = gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"   # for GTK4 apps
 
 # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
 input {
@@ -192,7 +220,7 @@ dwindle {
 
 master {
     # See https://wiki.hyprland.org/Configuring/Master-Layout/ for more
-    new_is_master = true
+    new_status = master
 }
 
 gestures {
@@ -282,7 +310,6 @@ windowrulev2 = tile,class:chrome
 windowrulev2 = suppressevent maximize,class:^(libreoffice.*)$
 
 windowrule = workspace 9 silent,firefox
-windowrule = workspace 10 silent,title:CoreCtrl
 windowrule = workspace name:docs, thunar
 
 windowrulev2 = float,class:(qalculate-gtk)
@@ -387,9 +414,15 @@ bind = $mainMod SHIFT, N, exec, notify-send.py a --hint boolean:deadd-notificati
 bind = SUPER+ALT, N, exec, notify-send.py a --hint boolean:deadd-notification-center:true string:type:clearInCenter
 
 # screenshot of selected area copied to clipboard
-bind = $mainMod, c, exec, grimblast copy area
+# bind = $mainMod, c, exec, grimblast copy area
+bind = $mainMod, c, exec, ~/bin/screenshot.sh
+
 # screenshot of selected area saved to ~/tmpfs/screenshot.png
 bind = $mainMod SHIFT, C, exec, grimblast save area ~/tmpfs/screenshot.png
+
+# resize window for 640x400 screenshots
+bind = $mainMod, x, resizeactive, exact 640 400
+
 # color picker
 bind = SUPER+ALT, c, exec, hyprpicker --autocopy --format=hex
 

@@ -1,0 +1,220 @@
+#+title: Tmux
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/tmux/tmux.conf.tmpl
+
+* Install
+** Tmux
+*** Arch Linux
+#+begin_src conf :tangle etc/yupfiles/tmux.yup
+tmux latest noaur
+urlview-xdg-git latest
+#+end_src
+
+** TPM - Tmux Plugin Manager
+It can be installed from AUR too, but as it manages plugins, it seems to me
+better for it to manage itself.
+
+I'm using standard XDG dir structure.
+
+#+begin_src sh
+git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+#+end_src
+
+* Key bindings
+Main prefix is =Ctrl+A= so every other keybinding need prefix first:
+
+** Windows and panes
+I'm using classic Vim like keys. I switched to [[https://github.com/tmux-plugins/tmux-pain-control][tmux-pain-control]] which you can
+check for all keybindings.
+
+| =∣=     | Split window horizontally           |
+| =-=     | Split window vertically             |
+| =h=     | Switch to pane: left                |
+| =l=     | Switch to pane: right               |
+| =j=     | Switch to pane: down                |
+| =k=     | Switch to pane: up                  |
+| =Alt+j= | Next window                         |
+| =Alt+k= | Previous window                     |
+| =w=     | Switch between windows with preview |
+
+** Sessions
+| =s= | List of sessions |
+
+** Clipboard
+| =Esc= | Switch to copy-mode |
+| =J=   | Switch to copy-mode with jump plugin |
+| =y=   | Yank in copy-mode   |
+
+** Other goodies
+| =u=     | List all URLs in buffer      |
+
+** Tmux management
+| =R= | Reload Tmux config |
+| =I= | Install plugins    |
+| =U= | Update plugins     |
+
+* Configure
+** Prefix key
+
+#+begin_src conf
+set -g prefix C-a
+#+end_src
+
+** Status bar
+#+begin_src conf
+#set -g status-right ''
+set -g status-right '#h (#(uname -r))'
+
+# Terminal emulator window title
+set -g set-titles on
+#set -g set-titles-string '#(id -un)@#H [#S:#I.#P #W]'
+set -g set-titles-string '#H [#S:#I.#P #W]'
+
+setw -g window-status-current-format "#I:#W#F"
+setw -g window-status-format "#I:#T"
+
+#+end_src
+
+** Config
+#+begin_src conf
+# Change prefix key to Ctrl+a
+unbind C-b
+set -g prefix C-a
+
+# Last active window
+unbind l
+
+# Copy mode
+unbind [
+bind Escape copy-mode
+
+# Use Vi mode
+setw -g mode-keys vi
+
+# More straight forward key bindings for splitting
+unbind %
+bind | split-window -h
+unbind '"'
+bind - split-window -v
+bind v split-window -v
+
+# use the vim motion keys to move between panes
+bind j select-pane -D
+bind k select-pane -U
+bind h select-pane -R
+bind l select-pane -L
+
+bind -n M-k previous-window
+bind -n M-j next-window
+
+bind -n M-left previous-window
+bind -n M-right next-window
+bind -n M-h previous-window
+bind -n M-l next-window
+
+# Notifying if other windows has activities
+setw -g monitor-activity on
+set -g visual-activity on
+
+# Clock
+setw -g clock-mode-style 24
+
+set -g base-index 1
+
+#bind -n F8 command-prompt
+# quick view of processes
+bind '~' split-window "exec htop"
+
+# http://unix.stackexchange.com/questions/26548/write-all-tmux-scrollback-to-a-file
+bind-key P command-prompt -p 'save history to filename:' -I '~/tmux.history' 'capture-pane -S -32768 ; save-buffer %1 ; delete-buffer'
+
+# udržuje aktuální proměnnou při attachnutí sessiony
+set-option -g update-environment "SUDO_USER"
+
+#setw -g window-status-current-format "#(hostname) #I:#W#F"
+#setw -g window-status-format "#(hostname) #I:#W#F"
+#set -g terminal-overrides 'xterm*:smcup@:rmcup@'
+
+# join pane vertically or horizontally with menu
+bind-key          S choose-window "join-pane -v -s "%%""
+bind-key          V choose-window "join-pane -h -s "%%""
+#+end_src
+
+** Plugins
+*** Plugin manager :)
+#+begin_src conf
+set -g @plugin 'tmux-plugins/tpm'
+#+end_src
+#+begin_src conf
+set -g @plugin 'seebi/tmux-colors-solarized'
+
+# necessary plugins
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'tmux-plugins/tmux-pain-control'
+#+end_src
+
+*** Plugins in evaluation
+**** Sessionist
+This should allow me to easily manage sessions
+
+| =M-C=    | Update current path                                                   |
+| =$=      | Rename current session                                                |
+| =g=      | Go to session                                                         |
+| =C=      | Create new session by name                                            |
+| =X=      | Kill current session without detaching tmux                           |
+| =S=      | Switches to the last session                                          |
+| =@=      | Promote current pane to session                                       |
+| =Ctrl-@= | Promote current window to session                                     |
+| =m=      | Mark pane                                                             |
+|          | Join currently marked pane to current session/window and switch to it |
+| =t-=     | - horizontally                                                        |
+| =t∣=     | - vertically                                                          |
+| =t@=     | - fullscreen                                                          |
+
+#+begin_src conf
+bind M-C attach-session -c "#{pane_current_path}"
+
+set -g @plugin 'tmux-plugins/tmux-sessionist'
+#+end_src
+
+**** More
+#+begin_src conf
+set -g @plugin 'tmux-plugins/tmux-sessionist'
+set -g @plugin 'tmux-plugins/tmux-urlview'
+set -g @plugin 'tmux-plugins/tmux-copycat'
+set -g @plugin 'tmux-plugins/tmux-yank'
+set -g @plugin 'schasse/tmux-jump'
+set -g @jump-key 'J'
+
+#+end_src
+
+**** Logging
+| =P=     | Start/stop logging in the current pane |
+| =Alt-p= | Screen capture                         |
+| =Alt+P= | Save complete pane history             |
+
+#+begin_src conf
+set -g @plugin 'tmux-plugins/tmux-logging'
+#+end_src
+
+**** Tmux resurrect & Tmux continuum
+*Beware:* because of continuum plugin autosaving, this plugin should be last one
+before TPM initialization.
+
+- [[https://github.com/tmux-plugins/tmux-continuum][GitHub - tmux-plugins/tmux-continuum: Continuous saving of tmux environment. ...]]
+- [[https://github.com/tmux-plugins/tmux-resurrect][GitHub - tmux-plugins/tmux-resurrect: Persists tmux environment across system...]]
+
+| =Ctrl-s= | Save    |
+| =Ctrl-r= | Restore |
+
+#+begin_src conf
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+set -g @continuum-restore 'on'
+#+end_src
+
+** Initialize plugin manager
+This should be latest line in config file.
+
+#+begin_src conf
+run '~/.config/tmux/plugins/tpm/tpm'
+#+end_src
