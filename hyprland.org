@@ -6,7 +6,7 @@ it.
 
 * Install
 #+begin_src sh
-yay -S kitty hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-kde-agent qt6-wayland hyprpaper swayidle swaylock nwg-look-bin qt6ct kvantum
+yay -S kitty hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit-kde-agent qt6-wayland hyprpaper nwg-look qt6ct kvantum hyprpicker
 #+end_src
 
 - kitty :: terminal app recommended for Hyprland. My session didn't start from SDDM until I installed it, maybe investigate later as I'm not sure why I should have it, I like Alacritty.
@@ -40,6 +40,219 @@ For *qt6ct* to work, you need to set =QT_QPA_PLATFORMTHEME=qt6ct= variable.
 #+begin_src conf :tangle ~/.local/share/chezmoi/private_dot_config/xdg-desktop-portal/hyprland-portals.conf
 [preferred]
 default=hyprland;gtk
+#+end_src
+
+** Hypridle & Hyprlock
+There are new kids in town with ambitions to replace swayidle and swaylock. As
+I'm not really satisfied with any of those and started to use them just
+recently, it's time to test new toys.
+
+Installed in Arch with ~yay -S hypridle hyprlock~
+
+On notebook, you might want to install ~yay -S brightnessctl~ too.
+
+*** Hyprlock
+https://wiki.hyprland.org/Hypr-Ecosystem/hyprlock/
+
+TODO: trash color scheme and adjust by myself
+
+#+begin_src conf :tangle ~/.local/share/chezmoi/private_dot_config/hypr/hyprlock.conf.tmpl
+$rosewater = rgb(f4dbd6)
+$rosewaterAlpha = f4dbd6
+
+$flamingo = rgb(f0c6c6)
+$flamingoAlpha = f0c6c6
+
+$pink = rgb(f5bde6)
+$pinkAlpha = f5bde6
+
+$mauve = rgb(c6a0f6)
+$mauveAlpha = c6a0f6
+
+$red = rgb(ed8796)
+$redAlpha = ed8796
+
+$maroon = rgb(ee99a0)
+$maroonAlpha = ee99a0
+
+$peach = rgb(f5a97f)
+$peachAlpha = f5a97f
+
+$yellow = rgb(eed49f)
+$yellowAlpha = eed49f
+
+$green = rgb(a6da95)
+$greenAlpha = a6da95
+
+$teal = rgb(8bd5ca)
+$tealAlpha = 8bd5ca
+
+$sky = rgb(91d7e3)
+$skyAlpha = 91d7e3
+
+$sapphire = rgb(7dc4e4)
+$sapphireAlpha = 7dc4e4
+
+$blue = rgb(8aadf4)
+$blueAlpha = 8aadf4
+
+$lavender = rgb(b7bdf8)
+$lavenderAlpha = b7bdf8
+
+$text = rgb(cad3f5)
+$textAlpha = cad3f5
+
+$subtext1 = rgb(b8c0e0)
+$subtext1Alpha = b8c0e0
+
+$subtext0 = rgb(a5adcb)
+$subtext0Alpha = a5adcb
+
+$overlay2 = rgb(939ab7)
+$overlay2Alpha = 939ab7
+
+$overlay1 = rgb(8087a2)
+$overlay1Alpha = 8087a2
+
+$overlay0 = rgb(6e738d)
+$overlay0Alpha = 6e738d
+
+$surface2 = rgb(5b6078)
+$surface2Alpha = 5b6078
+
+$surface1 = rgb(494d64)
+$surface1Alpha = 494d64
+
+$surface0 = rgb(363a4f)
+$surface0Alpha = 363a4f
+
+$base = rgb(24273a)
+$baseAlpha = 24273a
+
+$mantle = rgb(1e2030)
+$mantleAlpha = 1e2030
+
+$crust = rgb(181926)
+$crustAlpha = 181926
+#+end_src
+
+#+begin_src conf :tangle ~/.local/share/chezmoi/private_dot_config/hypr/hyprlock.conf.tmpl
+$accent = $mauve
+$accentAlpha = $mauveAlpha
+$font = JetBrainsMono Nerd Font
+
+# GENERAL
+general {
+    disable_loading_bar = true
+    hide_cursor = true
+}
+
+# BACKGROUND
+background {
+    monitor =
+    blur_passes = 0
+    # color = $base
+}
+
+label {
+    monitor =
+    text = Hi there, stranger...
+    text_align = center # center/right or any value for default left. multi-line text alignment inside label container
+    color = rgba(200, 200, 200, 1.0)
+    font_size = 25
+    font_family = Noto Sans
+    rotate = 0 # degrees, counter-clockwise
+
+    position = 0, 80
+    halign = center
+    valign = center
+}
+# # TIME
+# label {
+#     monitor =
+#     text = cmd[update:30000] echo "$(date +"%R")"
+#     color = $text
+#     font_size = 90
+#     font_family = $font
+#     position = -30, 0
+#     halign = right
+#     valign = top
+# }
+
+# # DATE
+# label {
+#     monitor =
+#     text = cmd[update:43200000] echo "$(date +"%A, %d %B %Y")"
+#     color = $text
+#     font_size = 25
+#     font_family = $font
+#     position = -30, -150
+#     halign = right
+#     valign = top
+# }
+
+# INPUT FIELD
+input-field {
+    monitor =
+    size = 300, 60
+    outline_thickness = 4
+    dots_size = 0.2
+    dots_spacing = 0.2
+    dots_center = true
+    outer_color = $accent
+    inner_color = $surface0
+    font_color = $text
+    fade_on_empty = false
+    placeholder_text = <span foreground="##$textAlpha"><i>󰌾 Logged in as </i><span foreground="##$accentAlpha">🤷‍♀️</span></span>
+    hide_input = false
+    check_color = $accent
+    fail_color = $red
+    fail_text = <i>$FAIL <b>($ATTEMPTS)</b></i>
+    capslock_color = $yellow
+    position = 0, -35
+    halign = center
+    valign = center
+}
+#+end_src
+
+*** Hypridle
+#+begin_src conf :tangle ~/.local/share/chezmoi/private_dot_config/hypr/hypridle.conf.tmpl
+general {
+    lock_cmd = pidof hyprlock || hyprlock       # avoid starting multiple hyprlock instances.
+    before_sleep_cmd = loginctl lock-session    # lock before suspend.
+    after_sleep_cmd = hyprctl dispatch dpms on  # to avoid having to press a key twice to turn on the display.
+}
+
+{{ if ne .battery_device ""  }}
+listener {
+    timeout = 150                                # 2.5min.
+    on-timeout = brightnessctl -s set 10         # set monitor backlight to minimum, avoid 0 on OLED monitor.
+    on-resume = brightnessctl -r                 # monitor backlight restore.
+}
+
+# turn off keyboard backlight, comment out this section if you dont have a keyboard backlight.
+listener {
+    timeout = 150                                          # 2.5min.
+    on-timeout = brightnessctl -sd rgb:kbd_backlight set 0 # turn off keyboard backlight.
+    on-resume = brightnessctl -rd rgb:kbd_backlight        # turn on keyboard backlight.
+}
+
+{{ end }}
+listener {
+    timeout = 300                                 # 5min
+    on-timeout = loginctl lock-session            # lock screen when timeout has passed
+}
+
+listener {
+    timeout = 330                                 # 5.5min
+    on-timeout = hyprctl dispatch dpms off        # screen off when timeout has passed
+    on-resume = hyprctl dispatch dpms on          # screen on when activity is detected after timeout has fired.
+}
+
+listener {
+    timeout = 1800                                # 30min
+    on-timeout = systemctl suspend                # suspend pc
+}
 #+end_src
 
 ** Hyprland
@@ -95,7 +308,8 @@ exec-once = [workspace 0 silent] corectrl
 exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 
 # lock
-exec-once = swayidle -w
+# exec-once = swayidle -w
+exec-once = hypridle
 
 # clipboard manager
 exec-once = wl-paste --type text --watch cliphist store #Stores only text data
@@ -198,18 +412,18 @@ decoration {
 animations {
     enabled = no
 
-    # Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
+    # # Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
 
-    bezier = myBezier, 0.05, 0.9, 0.1, 1.05
-    bezier = easeInOutExpo, 0.87, 0, 0.13, 1
+    # bezier = myBezier, 0.05, 0.9, 0.1, 1.05
+    # bezier = easeInOutExpo, 0.87, 0, 0.13, 1
 
-    animation = windows, 1, 7, myBezier
-    animation = windowsOut, 1, 7, default, popin 80%
-    animation = border, 1, 10, default
-    animation = borderangle, 1, 8, default
-    animation = fade, 1, 7, default
-    #animation = workspaces, 1, 6, default
-    animation = workspaces, 1, 10, easeInOutExpo, fade
+    # animation = windows, 1, 7, myBezier
+    # animation = windowsOut, 1, 7, default, popin 80%
+    # animation = border, 1, 10, default
+    # animation = borderangle, 1, 8, default
+    # animation = fade, 1, 7, default
+    # #animation = workspaces, 1, 6, default
+    # animation = workspaces, 1, 10, easeInOutExpo, fade
 }
 
 dwindle {
@@ -322,6 +536,14 @@ windowrulev2 = nofocus,class:^(xwaylandvideobridge)$
 windowrulev2 = noinitialfocus,class:^(xwaylandvideobridge)$
 
 windowrulev2 = nomaxsize,class:^(org.raspberrypi.rpi-imager)$
+
+# steam
+windowrulev2 = stayfocused, title:^()$,class:^(steam)$
+windowrulev2 = minsize 1 1, title:^()$,class:^(steam)$
+windowrulev2 = fullscreen,class:^steam_app\d+$
+# windowrulev2 = desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,class:^steam_app_\d+$
+windowrulev2 = workspace 10,class:^steam_app_\d+$
+workspace = 10, border:false, rounding:false
 
 # Bindings
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
