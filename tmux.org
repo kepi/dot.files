@@ -32,6 +32,10 @@ check for all keybindings.
 | =l=     | Switch to pane: right               |
 | =j=     | Switch to pane: down                |
 | =k=     | Switch to pane: up                  |
+| =H=     | Move pane to far left               |
+| =L=     | Move pane to far right              |
+| =J=     | Move pane to far down               |
+| =K=     | Move pane to far up                 |
 | =Alt+j= | Next window                         |
 | =Alt+k= | Previous window                     |
 | =w=     | Switch between windows with preview |
@@ -41,7 +45,7 @@ check for all keybindings.
 
 ** Clipboard
 | =Esc= | Switch to copy-mode |
-| =J=   | Switch to copy-mode with jump plugin |
+| =F=   | Switch to copy-mode with jump plugin |
 | =y=   | Yank in copy-mode   |
 
 ** Other goodies
@@ -103,6 +107,12 @@ bind k select-pane -U
 bind h select-pane -R
 bind l select-pane -L
 
+# move pane to the far right/left/bottom/top
+bind H splitw -fhb \; swapp -t ! \; killp -t !
+bind L splitw -fh  \; swapp -t ! \; killp -t !
+bind J splitw -fv  \; swapp -t ! \; killp -t !
+bind K splitw -fvb \; swapp -t ! \; killp -t !
+
 bind -n M-k previous-window
 bind -n M-j next-window
 
@@ -129,6 +139,8 @@ bind-key P command-prompt -p 'save history to filename:' -I '~/tmux.history' 'ca
 
 # udržuje aktuální proměnnou při attachnutí sessiony
 set-option -g update-environment "SUDO_USER"
+
+set -g default-terminal "screen-256color"
 
 #setw -g window-status-current-format "#(hostname) #I:#W#F"
 #setw -g window-status-format "#(hostname) #I:#W#F"
@@ -183,7 +195,7 @@ set -g @plugin 'tmux-plugins/tmux-urlview'
 set -g @plugin 'tmux-plugins/tmux-copycat'
 set -g @plugin 'tmux-plugins/tmux-yank'
 set -g @plugin 'schasse/tmux-jump'
-set -g @jump-key 'J'
+set -g @jump-key 'F'
 
 #+end_src
 
@@ -209,7 +221,7 @@ before TPM initialization.
 #+begin_src conf
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
-set -g @continuum-restore 'on'
+# set -g @continuum-restore 'on'
 #+end_src
 
 ** Initialize plugin manager
