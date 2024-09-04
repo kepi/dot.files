@@ -59,7 +59,7 @@ exec --no-startup-id riot-web
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
-    
+
 # Home row direction keys, like vim
 set $left h
 set $down j
@@ -117,10 +117,10 @@ exec swayidle -w \
          timeout 600 'swaymsg "output * dpms off"' \
               resume 'swaymsg "output * dpms on"' \
          before-sleep 'swaylock -f -c 000000 -i $lock_bg'
-        
+
 set $lock swaylock -i $lock_bg
 bindsym --release Print exec $lock
-        
+
 ### Key bindings
 #
 # Basics:

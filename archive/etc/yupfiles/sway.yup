@@ -1,0 +1,5 @@
+sway latest noaur
+swaylock latest noaur
+swayidle latest noaur
+waybar latest noaur
+i3status-rust-git latest aur

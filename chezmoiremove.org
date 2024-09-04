@@ -1,0 +1,16 @@
+#+title: Chezmoiremove
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/.chezmoiremove.tmpl
+
+This is for config (and other) files I'm no longer using and want to be rid of them.
+
+#+begin_src conf
+.config/i3
+.config/sway
+.config/swayidle
+.config/swaylock
+.config/eww.yuck
+#+end_src
+
+#+begin_src sh
+yay -Rs sway swaylock swayidle i3status-rust-git
+#+end_src
