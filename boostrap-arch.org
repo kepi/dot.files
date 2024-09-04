@@ -19,23 +19,6 @@ then yupfiles to install things.
 sudo pacman -S base-devel git rsync
 #+end_src
 
-* Install termite terminfo entry
-#+begin_src sh
-[ -f /usr/share/terminfo/t/termite ] || (cd /tmp && wget -q https://raw.githubusercontent.com/thestinger/termite/master/termite.terminfo && tic -x termite.terminfo; /bin/rm termite.terminfo)
-#+end_src
-
-* Install Yup
-I'm using [[https://github.com/ericm/yup][Yup]] to install packages on Arch.
-
-#+begin_src sh
-if [ ! $(which yup) ]; then
-  cd /tmp
-  git clone https://aur.archlinux.org/yup-bin.git
-  cd yup-bin
-  makepkg -si
-fi  
-#+end_src
-
 * Yupfile
 No when /Yup/ is installed I can install software from /Yupfiles/.
 
@@ -51,5 +34,3 @@ yup -Y etc/yupfile
 #+begin_src conf :tangle etc/yupfiles/chezmoi.yup
 chezmoi latest noaur
 #+end_src
-
-
