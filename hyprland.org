@@ -239,29 +239,30 @@ listener {
 
 {{ end }}
 listener {
-    timeout = 300                                 # 5min
+    timeout = 600                                 # 10min
     on-timeout = loginctl lock-session            # lock screen when timeout has passed
 }
 
 listener {
-    timeout = 330                                 # 5.5min
+    timeout = 700                                 # 10.5min
     on-timeout = hyprctl dispatch dpms off        # screen off when timeout has passed
     on-resume = hyprctl dispatch dpms on          # screen on when activity is detected after timeout has fired.
 }
 
 listener {
-    timeout = 1800                                # 30min
+    #timeout = 1800                                # 30min
+    timeout = 3600                                # 60min
     on-timeout = systemctl suspend                # suspend pc
 }
 #+end_src
 
 ** Hyprland
-
 #+begin_src conf
 # See https://wiki.hyprland.org/Configuring/Monitors/
 
 # hyprpm isn't working for me at this moment, so I switched to aur hy3 pakckage.
 # plugin = /usr/lib/libhy3.so
+# plugin = /home/kepi/dev/os/hy3/build/libhy3.so
 
 # my desktop
 # {{ .chezmoi.hostname }}
@@ -293,6 +294,7 @@ exec-once = waybar
 
 exec-once = hyprpaper
 exec-once = seafile-applet
+exec-once = nextcloud
 exec-once = nm-applet
 exec-once = /usr/lib/kdeconnectd
 exec-once = /usr/lib/polkit-kde-authentication-agent-1
@@ -324,6 +326,7 @@ env = SSH_AUTH_SOCK,$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh
 
 # theme for QT apps
 env = QT_QPA_PLATFORMTHEME,qt6ct
+env = ELECTRON_OZONE_PLATFORM_HINT,wayland
 
 # dark theme for GTK apps
 exec = gsettings set org.gnome.desktop.interface gtk-theme "Adapta-Nokto-Eta"   # for GTK3 apps
@@ -362,26 +365,25 @@ general {
     border_size = 1
     col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
     col.inactive_border = rgba(595959aa)
-
     layout = hy3
 }
 
-decoration {
-    # See https://wiki.hyprland.org/Configuring/Variables/ for more
+# decoration {
+#     # See https://wiki.hyprland.org/Configuring/Variables/ for more
 
-    rounding = 10
+#     rounding = 10
 
-    blur {
-        enabled = yes
-        size = 10
-        passes = 1
-    }
+#     blur {
+#         enabled = yes
+#         size = 10
+#         passes = 1
+#     }
 
-    drop_shadow = yes
-    shadow_range = 4
-    shadow_render_power = 3
-    col.shadow = rgba(1a1a1aee)
-}
+#     drop_shadow = yes
+#     shadow_range = 4
+#     shadow_render_power = 3
+#     col.shadow = rgba(1a1a1aee)
+# }
 # dracula/hyprland
 general {
     col.active_border = rgb(44475a) rgb(bd93f9) 90deg
@@ -398,15 +400,15 @@ general {
     #col.group_border_active = rgb(44475a) # or rgb(6272a4)
 
 }
-decoration {
-    col.shadow = rgba(1E202966)
-    # suggested shadow setting
-    #drop_shadow = yes
-    #shadow_range = 60
-    #shadow_offset = 1 2
-    #shadow_render_power = 3
-    #shadow_scale = 0.97
-}
+# decoration {
+#     col.shadow = rgba(1E202966)
+#     # suggested shadow setting
+#     #drop_shadow = yes
+#     #shadow_range = 60
+#     #shadow_offset = 1 2
+#     #shadow_render_power = 3
+#     #shadow_scale = 0.97
+# }
 #windowrulev2 = bordercolor rgb(ff5555),xwayland:1 # check if window is xwayland
 
 animations {
@@ -437,12 +439,12 @@ master {
     new_status = master
 }
 
-gestures {
-    # See https://wiki.hyprland.org/Configuring/Variables/ for more
-    workspace_swipe = on
-    workspace_swipe_invert = no
-    workspace_swipe_cancel_ratio = 0.1
-}
+# gestures {
+#     # See https://wiki.hyprland.org/Configuring/Variables/ for more
+#     workspace_swipe = on
+#     workspace_swipe_invert = no
+#     workspace_swipe_cancel_ratio = 0.1
+# }
 
 # group {
 #    groupbar {
@@ -464,8 +466,8 @@ plugin {
         tabs {
             height = 15
             padding = 5
-            from_top = true
-            rounding = 10
+            # from_top = true
+            radius = 10
             render_text = true
             text_center = true
             text_padding = 3
@@ -496,24 +498,24 @@ plugin {
         }
     }
 
-        hyprfocus {
-            enabled = false
+    hyprfocus {
+        enabled = false
 
-            keyboard_focus_animation = shrink
+        keyboard_focus_animation = shrink
 
-            bezier = bezIn, 0.5,0.0,1.0,0.5
-            bezier = bezOut, 0.0,0.5,0.5,1.0
+        bezier = bezIn, 0.5,0.0,1.0,0.5
+        bezier = bezOut, 0.0,0.5,0.5,1.0
 
-            shrink {
-                shrink_percentage = 0.99
+        shrink {
+        shrink_percentage = 0.99
 
-                in_bezier = bezIn
-                in_speed = 1
+        in_bezier = bezIn
+        in_speed = 1
 
-                out_bezier = bezOut
-                out_speed = 3
-            }
+        out_bezier = bezOut
+        out_speed = 3
         }
+    }
 }
 
 # Window rules
@@ -523,8 +525,9 @@ windowrulev2 = workspace 8 silent,class:chrome
 windowrulev2 = tile,class:chrome
 windowrulev2 = suppressevent maximize,class:^(libreoffice.*)$
 
-windowrule = workspace 9 silent,firefox
-windowrule = workspace name:docs, thunar
+# TODO: make to windowrulev2
+# windowrule = workspace 9 silent,firefox
+# windowrule = workspace name:docs, thunar
 
 windowrulev2 = float,class:(qalculate-gtk)
 windowrulev2 = workspace special:calculator,class:(qalculate-gtk)
@@ -541,7 +544,13 @@ windowrulev2 = nomaxsize,class:^(org.raspberrypi.rpi-imager)$
 windowrulev2 = stayfocused, title:^()$,class:^(steam)$
 windowrulev2 = minsize 1 1, title:^()$,class:^(steam)$
 windowrulev2 = fullscreen,class:^steam_app\d+$
-# windowrulev2 = desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,class:^steam_app_\d+$
+
+# gamescope windows float
+windowrulev2 = fullscreen, class:^(gamescope)$
+windowrulev2 = noborder, class:^(gamescope)$
+windowrulev2 = noshadow, class:^(gamescope)$
+
+# windowrulev2 = monitor[ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079],class:^steam_app\d+$
 windowrulev2 = workspace 10,class:^steam_app_\d+$
 workspace = 10, border:false, rounding:false
 
@@ -627,6 +636,10 @@ bind = $mainMod SHIFT, p, exec, gopass --nosync ls --flat | rofi -dmenu -p 'Pass
 bind = $mainMod, u, exec, gopass --nosync ls --flat | rofi -dmenu -p 'User for:' | xargs -I "{}" --no-run-if-empty gopass show '{}' user | ydotool type --key-delay=10 --key-hold=10 --file=-
 bind = $mainMod, o, exec, gopass --nosync ls --flat otp | rofi -dmenu -p 'OTP for:' | xargs --no-run-if-empty gopass otp | sed 's/ .*//' | ydotool type --key-delay=10 --key-hold=10 --file=-
 
+# emoji
+bind = $mainMod SHIFT, E, exec, rofi -modi emoji -show emoji
+
+
 # notification center
 # show hide
 bind = $mainMod, N, exec, systemctl --user --signal=USR1 kill deadd-notification-center.service
@@ -639,14 +652,11 @@ bind = SUPER+ALT, N, exec, notify-send.py a --hint boolean:deadd-notification-ce
 # bind = $mainMod, c, exec, grimblast copy area
 bind = $mainMod, c, exec, ~/bin/screenshot.sh
 
-# screenshot of selected area saved to ~/tmpfs/screenshot.png
-bind = $mainMod SHIFT, C, exec, grimblast save area ~/tmpfs/screenshot.png
-
 # resize window for 640x400 screenshots
 bind = $mainMod, x, resizeactive, exact 640 400
 
 # color picker
-bind = SUPER+ALT, c, exec, hyprpicker --autocopy --format=hex
+bind = $mainMod SHIFT, C, exec, hyprpicker --autocopy --format=hex
 
 # I'm using alacritty as my main terminal
 bind = $mainMod SHIFT, RETURN, exec, alacritty
@@ -801,6 +811,7 @@ wallpaper=desc:HAT Kamvas Pro 24 0xF0000004,~/Seafile/Kepiho/Dokumenty/Wallpaper
 wallpaper=desc:Dell Inc. DELL P2723DE G1MP1L3,~/Seafile/Kepiho/Dokumenty/Wallpapers/kdc.jpg
 wallpaper=desc:ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079,~/Seafile/Kepiho/Dokumenty/Wallpapers/2560x1440_Witcher3_geralt-trophies.png
 wallpaper=desc:Dell Inc. DELL P2723DE B1MP1L3,~/Seafile/Kepiho/Dokumenty/Wallpapers/the-mandalorian-minimalist-art-4k-kj-1440x2560.jpg
+wallpaper=desc:LG Display 0x0719 0x300523A1,~/Seafile/Kepiho/Dokumenty/Wallpapers/2560x1440_Witcher3_geralt-trophies.png
 #+end_src
 ** Support scripts
 *** Switch Workspace :ARCHIVE:
