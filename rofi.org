@@ -5,6 +5,8 @@
 ** Arch Linux
 #+begin_src conf :tangle etc/yupfiles/rofi.yup
 rofi-lbonn-wayland-git latest aur
+rofi-emoji-git latest aur
+wtype
 #+end_src
 
 ** TODO Add theme to chezmoi
