@@ -8,17 +8,21 @@
 #+begin_src jsonc
 {
     "layer": "top",
+    "height": 36,
     "modules-left": [
         "hyprland/workspaces"
     ],
     "modules-center": ["hyprland/window"],
     "modules-right": [
+        "custom/clocked-in",
         "clock#date",
         "clock#time",
+        "custom/podpora",
+        "custom/platby",
         "custom/updates",
-        "backlight",
         "pulseaudio",
         "pulseaudio#mic",
+        "backlight",
         "battery",
         "custom/media",
         "tray",
@@ -26,9 +30,9 @@
     ],
 
     "pulseaudio": {
-        "format": "VOL {volume}% {icon}",
-        "format-bluetooth": "BL {volume}% {icon}",
-        "format-muted": "MUT ",
+        "format": "{icon}  {volume} %",
+        "format-bluetooth": "{icon}  {volume} % ",
+        "format-muted": "",
         "format-icons": {
             "headphone": "",
             "hands-free": "",
@@ -105,7 +109,7 @@
     "clock#date": {
 		"format":" {:%a %e. %b}",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
-  "calendar": {
+        "calendar": {
                     "mode"          : "year",
                     "mode-mon-col"  : 3,
                     "weeks-pos"     : "right",
@@ -169,6 +173,30 @@
         "exec-if": "[[ $(checkupdates | wc -l) != 0 ]]",
         "interval": 3600,
     },
+    "custom/clocked-in": {
+        "format": "󰅓 {text}",
+        "interval": 15,
+        "return-type": "json",
+        "exec": "$HOME/bin/status-clocked_in",
+        "on-click": "$HOME/bin/hypr-switch-workspace 3",
+        "on-right-click": "xdg-open 'https://projects.igloonet.cz/work_time/index?day=31&month=7&prj=false&user=3&year=2025'"
+    },
+    "custom/podpora": {
+        "format": " {text}",
+        "interval": 10,
+        "hide-empty-text": true,
+        "return-type": "json",
+        "exec": "$HOME/bin/waybar-custom-redmine 'https://projects.igloonet.cz/projects/hosting/issues.json?query_id=529'",
+        "on-click": "xdg-open 'https://projects.igloonet.cz/projects/hosting/issues?query_id=529'"
+    },
+    "custom/platby": {
+        "format": " {text}",
+        "interval": 10,
+        "hide-empty-text": true,
+        "return-type": "json",
+        "exec": "$HOME/bin/waybar-custom-redmine 'https://projects.igloonet.cz/projects/hosting-platby/issues.json?query_id=528'",
+        "on-click": "xdg-open 'https://projects.igloonet.cz/projects/hosting-platby/issues?query_id=528'"
+    }
 }
 #+end_src
 
@@ -196,6 +224,10 @@ tooltip {
   border-style: solid;
   border-color: #11111b;
   transition: 0.3s;
+}
+
+#workspaces {
+    margin: 2px 0;
 }
 
 #workspaces button {
@@ -226,45 +258,16 @@ tooltip {
   border-radius: 20px;
 }
 
-#custom-power_profile,
-#custom-power,
-#custom-updates,
-#custom-weather,
-#window,
-#clock,
-#battery,
-#pulseaudio,
-#network,
-#bluetooth,
-#temperature,
-#workspaces,
 #tray,
-#backlight {
+#pulseaudio,
+#pulseaudio.mic,
+.modules-right widget label {
   background: #1e1e2e;
   opacity: 0.8;
   padding: 0px 10px;
-  margin: 0;
-  margin-top: 5px;
-  border: 1px solid #181825;
-}
-
-#temperature {
-  border-radius: 20px 0px 0px 20px;
-}
-
-#temperature.critical {
-  color: #eba0ac;
-}
-
-#backlight {
-  border-radius: 20px 0px 0px 20px;
-  padding-left: 7px;
-}
-
-#tray {
-  border-radius: 20px;
-  margin-right: 5px;
-  padding: 0px 4px;
+  margin: 2px 0;
+  border: 0 solid #181825;
+  color: #181825;
 }
 
 #workspaces {
@@ -275,65 +278,140 @@ tooltip {
   padding-left: 5px;
 }
 
-#custom-power_profile {
-  color: #a6e3a1;
-  border-left: 0px;
-  border-right: 0px;
-}
-
 #window {
   border-radius: 20px;
   margin-left: 5px;
   margin-right: 5px;
 }
 
-#clock {
-  color: #fab387;
+/* padding fix */
+#pulseaudio.mic {
+  padding-right: 20px;
+}
+
+#custom-power {
+  padding-right: 14px;
+}
+
+/* whole rounded */
+#custom-power,
+#tray,
+#clock,
+#custom-media,
+#custom-weather,
+#custom-updates,
+#custom-platby,
+#custom-podpora,
+#custom-clocked-in {
   border-radius: 20px;
-  margin-left: 5px;
-  border-right: 0px;
-  transition: 0.3s;
-  padding-left: 7px;
-}
-
-#network {
-  color: #f9e2af;
-  border-radius: 20px 0px 0px 20px;
-  border-left: 0px;
-  border-right: 0px;
-}
-
-#bluetooth {
-  color: #89b4fa;
-  border-radius: 20px;
-  margin-right: 10px;
-}
-
-#pulseaudio {
-  color: #89b4fa;
-  border-left: 0px;
-  border-right: 0px;
-}
-
-#pulseaudio.microphone {
-  color: #cba6f7;
-  border-left: 0px;
-  border-right: 0px;
-  border-radius: 0px 20px 20px 0px;
   margin-right: 5px;
-  padding-right: 8px;
+  margin-left: 5px;
 }
-
-#battery {
-  color: #a6e3a1;
+/* rounded left */
+#backlight,
+#pulseaudio {
+  border-radius: 20px 0 0 20px;
+  margin-left: 5px;
+  border-right: 0;
+}
+/* rounded right */
+#battery,
+#pulseaudio.mic {
   border-radius: 0 20px 20px 0;
   margin-right: 5px;
-  border-left: 0px;
+  border-left: 0;
 }
 
-#custom-weather {
-  border-radius: 20px;
-  border-right: 0px;
-  margin-left: 0px;
+/* color group 1 */
+#custom-clocked-in.good {
+    background-color: #FAB387;
+}
+
+/* color group alert */
+#pulseaudio.mic,
+#custom-podpora.critical,
+#custom-platby.critical {
+    background-color: #f38ba8;
+}
+
+/* color group warning */
+#custom-podpora.warning,
+#custom-platby.warning {
+    background-color: #f9e2af;
+}
+
+/* color group 4 */
+#pipewire {
+    background-color: #94e2d5;
+}
+
+/* color group 5 */
+#none {
+  background-color: #cba6f7;
+  color: #181825;
+}
+
+/* color group 6 */
+#none {
+  background-color: #f2cdcd;
+}
+
+#custom-power {
+  background: #073642;
+  color: #f9e2af;
+}
+
+/* idle and low priority */
+#tray,
+#battery,
+#backlight,
+#pulseaudio,
+#pulseaudio.mic.source-muted,
+#custom-updates,
+#custom-clocked-in.idle,
+#custom-podpora.idle,
+#custom-platby.idle,
+#clock {
+  /*background: #1e1e2e;*/
+  background: #0D242C;
+  color: #FDF6E3;
+}
+
+/* events */
+#battery.warning,
+#battery.critical,
+#battery.urgent {
+  background-color: #ff0000;
+  color: #FFFF00;
+}
+
+#battery.charging {
+  background-color: #a6e3a1;
+  color: #181825;
+}
+
+
+#tray menu menuitem * {
+  color: white;
+  background: transparent;
+}
+
+#tray menu separator {
+  border-top: 1px solid black;
+  margin-right: 1em;
 }
 #+end_src
+
+* Scripts for modules
+** Status Clocked In
+#+begin_src conf :tangle ~/.local/share/chezmoi/bin/executable_status-clocked_in :mkdirp yes :shebang #!/bin/bash
+emacs --batch --eval "(progn (require 'server) (princ (format \"%s\\n\" (server-eval-at \"mu\" '(org-clock-current-task-to-waybar-json)))))" || echo '{"text": "", "class": "idle"}'
+#+end_src
+
+#+begin_example
+if ps -ef | grep 'server-name "m[u]"' > /dev/null; then
+   emacs --batch --eval "(progn (require 'server) (princ (format \"%s\\n\" (server-eval-at \"mu\" '(org-clock-current-task-to-waybar-json)))))" || echo '{"text": "", "class": "idle"}'
+else
+  echo '{"text": "", "class": "idle"}'
+fi
+#+end_example
