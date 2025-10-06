@@ -69,4 +69,6 @@
 [init]
   defaultBranch = main
 
+[url "https://github.com/"]
+	insteadOf = git://github.com
 #+end_src
