@@ -22,6 +22,7 @@ Apart of obvious /zsh/, I also need /exa/ which I'm using instead of /ls/ and
 zsh latest noaur
 eza latest noaur
 fzf latest noaur
+asdf-vm latest
 #+end_src
 
 * Aliases
@@ -444,9 +445,11 @@ export WINIT_X11_SCALE_FACTOR=1
 
 ** Path
 #+begin_src conf
-PATH=$HOME/bin:$HOME/.local/bin:$HOME/.yarn/bin:$HOME/.pyenv/bin:$HOME/.poetry/bin:$HOME/.emacs.d/bin:$PATH
+PATH=$HOME/bin:$HOME/.local/bin:$HOME/.yarn/bin:$HOME/.pyenv/bin:$HOME/.poetry/bin:$HOME/.emacs.d/bin:$HOME/.roswell/bin:$PATH
 export PATH
 #+end_src
+
+Don't forget to run ~doom env~ after changing PATH if you use Doom Emacs.
 
 ** Pasting
 When pasting something to terminal, mainly from browser, most of the time it
@@ -629,7 +632,40 @@ lazyload ruby rbenv gem bundle -- 'eval "$($HOME/.rbenv/bin/rbenv init --no-reha
 
 or just use [[github:ELLIOTTCABLE/rbenv.plugin.zsh]]
 
+*** ASDF
+I'm trying Elixir and Erlang and I found [[https://github.com/asdf-vm/asdf][GitHub - asdf-vm/asdf: Extendable
+version manager with support for Ruby, Node...]]. It might be worth checking into
+more plugins and use it instead of rbenv, nvm, pyenv etc.
 
+Installed with ~yay SDf-vm~
+
+#+begin_src conf
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+#+end_src
+
+**** List available versions
+#+begin_src sh
+asdf list
+#+end_src
+
+**** Find latest version of something
+#+begin_src sh
+asdf latest elixir
+#+end_src
+
+#+RESULTS:
+: 1.18.3-otp-27
+
+**** Install latest versions
+#+begin_src sh
+asdf install elixir latest
+#+end_src
+
+*** Elixir, Erlang and OTP
+**** Enable history in iex
+#+begin_src conf
+export ERL_AFLAGS="-kernel shell_history enabled"
+#+end_src
 
 *** Envkey
 #+begin_src conf
