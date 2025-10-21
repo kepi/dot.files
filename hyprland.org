@@ -249,11 +249,11 @@ listener {
     on-resume = hyprctl dispatch dpms on          # screen on when activity is detected after timeout has fired.
 }
 
-listener {
-    #timeout = 1800                                # 30min
-    timeout = 3600                                # 60min
-    on-timeout = systemctl suspend                # suspend pc
-}
+# listener {
+#     #timeout = 1800                                # 30min
+#     timeout = 3600                                # 60min
+#     on-timeout = systemctl suspend                # suspend pc
+# }
 #+end_src
 
 ** Hyprland
