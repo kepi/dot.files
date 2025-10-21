@@ -1,0 +1,46 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /home/kepi/dev/kepi/dotfiles/zsh.org
+
+
+* ZSH config
+** Antidote
+*** Plugins
+**** TODO zsh-abbr - auto expanding abbreviations
+:PROPERTIES:
+:ARCHIVE_TIME: 2025-10-20 po 12:43
+:ARCHIVE_FILE: ~/dev/kepi/dotfiles/zsh.org
+:ARCHIVE_OLPATH: ZSH config/Antidote/Plugins
+:ARCHIVE_CATEGORY: zsh
+:ARCHIVE_TODO: TODO
+:END:
+[[https://github.com/olets/zsh-abbr][abbr]] is the zsh manager for auto-expanding abbreviations - text that when
+written in a terminal is replaced with other (typically longer) text. Inspired
+by fish shell.
+
+I'm not sure I want this but lets try...
+
+#+begin_src conf
+olets/zsh-abbr kind:defer
+#+end_src
+
+*** Envkey
+:PROPERTIES:
+:ARCHIVE_TIME: 2025-10-20 po 13:55
+:ARCHIVE_FILE: ~/dev/kepi/dotfiles/zsh.org
+:ARCHIVE_OLPATH: ZSH config/Antidote
+:ARCHIVE_CATEGORY: zsh
+:END:
+#+begin_src conf
+_envkey_yargs_completions()
+{
+  local reply
+  local si=$IFS
+  IFS=$'
+' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" ../../../bin/envkey --get-yargs-completions "${words[@]}"))
+  IFS=$si
+  _describe 'values' reply
+}
+compdef _envkey_yargs_completions envkey
+#+end_src

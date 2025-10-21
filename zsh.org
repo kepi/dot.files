@@ -13,27 +13,13 @@ I loved zsh4humans but there is one big upside of my own config. I'm no longer
 trying to find where to turn off unwanted features, I'm instead looking for how
 to get features I want. Which is really much easier.
 
-* Install
-Apart of obvious /zsh/, I also need /exa/ which I'm using instead of /ls/ and
-/fzf/ for may completion features.
-
-** Arch Linux
-#+begin_src conf :tangle etc/yupfiles/zsh.yup
-zsh latest noaur
-eza latest noaur
-fzf latest noaur
-asdf-vm latest
-#+end_src
+And this is last version of my config which is attemtp to use /Guix home/ for package installation and part of configuration.
 
 * Aliases
 #+begin_src conf :tangle ~/.local/share/chezmoi/dot_aliases
+alias o='xdg-open'
+
 alias j='z'
-
-# ssh aliases
-alias ssha='ssh -o ForwardAgent=yes'
-
-# misc aliases
-alias tree='tree -C -a -I .git'
 
 # my ip
 alias myip4='curl -4 ifconfig.co'
@@ -71,9 +57,6 @@ alias df='df -h'
 # chown links by default too
 alias chown='chown -h'
 
-# display weather
-wttr() { curl -4 "http://wttr.in/$1"; }
-
 undounzip(){
   [ -f "$1" ] && unzip -l "$1" | sed -e '1,/---/d' -e '/---/,$d' | awk 'BEGIN { OFS="" ; ORS="" } ; { for ( i=4; i<NF; i++ ) print $i " "; print $NF "\n" }' | xargs -I{} rm -r {}
 }
@@ -83,18 +66,8 @@ alias git='noglob git'
 alias scp='noglob scp'
 alias rsync='noglob rsync'
 
-# adhoc aliasy pro různé drobnosti
-alias dco=docker-compose
-alias pc=podman-compose
-
-# kvůli čtení dokumentace
-alias help='bash -c help'
-
 # ARCH linux aliasy
-alias pacitude="pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'"
 alias rename="file-rename"
-
-alias kc=kubectl
 #+end_src
 
 And of course, load the aliases from =.zshrc=
@@ -115,9 +88,13 @@ many non-work devices with where my config was always behind or absent. If not
 for this, I might probably try and stay with [[https://zdharma.org/zinit/wiki/INTRODUCTION/][Zinit]] but then I discovered [[https://github.com/romkatv/zsh4humans][Zsh for
 humans]] and it looks like exact match for what I need.
 
+But than it got discontinued, I switched to simpler configuration with Antigen.
+
+And now I'm trying to use only packages present in Guix, let's see.
+
 ** Options
 Set up Zsh options. There are [[https://zsh.sourceforge.io/Doc/Release/Options.html][too many]] to go through all of them, but I took
-time to copy/adjust short description for every option I'm using, so I know what
+time to copy/adjust short description for most options I'm using, so I know what
 it is doing.
 
 If a completion is performed with the cursor within a word, and a full
@@ -191,28 +168,28 @@ setopt no_flow_control
 setopt no_list_types
 #+end_src
 
-#+begin_src conf
-setopt no_prompt_bang
-#+end_src
+# #+begin_src conf
+# setopt no_prompt_bang
+# #+end_src
+
+# #+begin_src conf
+# setopt no_prompt_subst
+# #+end_src
+
+# #+begin_src conf
+# setopt prompt_cr
+# #+end_src
+
+# #+begin_src conf
+# setopt prompt_percent
+# #+end_src
+
+# #+begin_src conf
+# setopt prompt_sp
+# #+end_src
 
 #+begin_src conf
-setopt no_prompt_subst
-#+end_src
-
-#+begin_src conf
-setopt prompt_cr
-#+end_src
-
-#+begin_src conf
-setopt prompt_percent
-#+end_src
-
-#+begin_src conf
-setopt prompt_sp
-#+end_src
-
-#+begin_src conf
-setopt typeset_silent
+# setopt typeset_silent
 #+end_src
 
 
@@ -267,7 +244,7 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 #+end_src
 
 *** Editing Command Lines In Vim
-When in normal mode, hit =v= to edit current command line in your ~$VISUAL~ (or
+When in normal mode, hit =e= to edit current command line in your ~$VISUAL~ (or
 ~$EDITOR~).
 
 #+begin_src conf
@@ -378,6 +355,9 @@ And last, but not least, *never* execute immediately after history expansion.
 setopt hist_verify
 #+end_src
 
+*** History :ARCHIVE:
+Moved directly to Guix:
+
 #+begin_src conf
 HISTFILE=~/.zsh_history
 HISTSIZE=1000000000
@@ -418,7 +398,7 @@ zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/.zcompcache"
 GEM_PATH=~/.gem
 _JAVA_AWT_WM_NONREPARENTING=1
 
-TERMINAL=/usr/bin/termite
+# TERMINAL=/usr/bin/termite
 
 EDITOR={{ .editor }}
 VISUAL={{ .editor }}
@@ -443,13 +423,8 @@ export EDITOR GPG_TTY
 export WINIT_X11_SCALE_FACTOR=1
 #+end_src
 
-** Path
-#+begin_src conf
-PATH=$HOME/bin:$HOME/.local/bin:$HOME/.yarn/bin:$HOME/.pyenv/bin:$HOME/.poetry/bin:$HOME/.emacs.d/bin:$HOME/.roswell/bin:$PATH
-export PATH
-#+end_src
-
-Don't forget to run ~doom env~ after changing PATH if you use Doom Emacs.
+** TODO Path
+I'm setting PATH in guix
 
 ** Pasting
 When pasting something to terminal, mainly from browser, most of the time it
@@ -472,7 +447,7 @@ bracketed-paste() {
 zle -N bracketed-paste
 #+end_src
 
-** Antidote
+** Antidote - removing (it is great, but we have Guix)
 Instead of /Zinit/, I switched to [[https://getantidote.github.io][Antidote]]. It is fast, kind of easy and more
 transparent.
 
@@ -484,34 +459,33 @@ Unfortunately, it has been discontinued last year. Fortunately [[https://github.
 
 #+begin_src conf
 # clone antidote if necessary
-[[ -e ~/.antidote ]] || git clone https://github.com/mattmc3/antidote.git ~/.antidote
+# [[ -e ~/.antidote ]] || git clone https://github.com/mattmc3/antidote.git ~/.antidote
 
 # source antidote
-. ~/.antidote/antidote.zsh
+# . ~/.antidote/antidote.zsh
 
 # set friendly names
-zstyle ':antidote:bundle' use-friendly-names 'yes'
+# zstyle ':antidote:bundle' use-friendly-names 'yes'
 
 # generate and source plugins from ~/.zsh_plugins.txt
-antidote load
+# antidote load
 #+end_src
 
 *** Plugins
 :PROPERTIES:
-:header-args:conf: :tangle ~/.local/share/chezmoi/dot_zsh_plugins.txt
+:header-args:conf: :tangle nil
 :END:
-**** Lazyload
+**** TODO Lazyload
 Small plugin allowing to lazy load some libraries when command is typed.
 
 #+begin_src conf
-qoomon/zsh-lazyload
+# qoomon/zsh-lazyload
 #+end_src
 
-**** Prompt
+**** Prompt - replaced :ARCHIVE:
 Add to ZSH plugins:
 #+begin_src conf
 sindresorhus/pure kind:fpath
-#romkatv/powerlevel10k kind:fpath
 #+end_src
 
 Init prompt
@@ -529,7 +503,7 @@ joshskidmore/zsh-fzf-history-search kind:defer
 
 FZF has to be already present in your system.
 
-**** z - jump arround
+**** TODO z - jump arround
 [[https://github.com/agkozak/zsh-z][zsh-z]] is really convenient way to quickly jump to directories you
 once visited. I have alias set up to =j= (as /jump/).
 
@@ -537,10 +511,10 @@ If you type =j= only, it will print path history. If you type =j <part_of_path>=
 then you /cd/ into the match based on [[https://en.wikipedia.org/wiki/Frecency][frecency]].
 
 #+begin_src conf
-agkozak/zsh-z
+# agkozak/zsh-z
 #+end_src
 
-**** zsh-autosuggestions
+**** zsh-autosuggestions - guixed :ARCHIVE:
 Fish-like fast/unobtrusive autosuggestions for zsh.
 
 Since I discovered fish-like /autosugestions/ I kind of get used to them. I'm
@@ -565,7 +539,7 @@ in shell. Let's do it with style.
 zsh-users/zsh-syntax-highlighting kind:defer
 #+end_src
 
-**** TODO zsh-abbr - auto expanding abbreviations
+**** TODO zsh-abbr - auto expanding abbreviations :ARCHIVE:
 [[https://github.com/olets/zsh-abbr][abbr]] is the zsh manager for auto-expanding abbreviations - text that when
 written in a terminal is replaced with other (typically longer) text. Inspired
 by fish shell.
@@ -598,7 +572,7 @@ zsh-users/zsh-history-substring-search kind:defer
 davidparsson/zsh-pyenv-lazy
 #+end_src
 
-**** nx completion
+**** nx completion :ARCHIVE:
 #+begin_src conf
 jscutlery/nx-completion
 #+end_src
@@ -609,7 +583,7 @@ NVM_SYMLINK_CURRENT="true" # nvm use should make a symlink
 NVM_DIR="$HOME/.nvm"
 lazyload nvm node nodejs gatsby yarn npm npx -- 'source "$NVM_DIR/nvm.sh"'
 #+end_src
-*** Nodenv - Node version manager
+*** Nodenv - Node version manager :ARCHIVE:
 I recently switched from NVM to *Nodenv*, as I like idea of shims as I'm used to them from *Rbenv*.
 
 #+begin_src conf
@@ -624,7 +598,7 @@ export PNPM_HOME="/home/kepi/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 #+end_src
 
-*** Rbenv - Ruby version manager
+*** Rbenv - Ruby version manager :ARCHIVE:
 #+begin_src conf
 RBENV_ROOT="$HOME/.rbenv"
 lazyload ruby rbenv gem bundle -- 'eval "$($HOME/.rbenv/bin/rbenv init --no-rehash - zsh)"'
@@ -632,7 +606,7 @@ lazyload ruby rbenv gem bundle -- 'eval "$($HOME/.rbenv/bin/rbenv init --no-reha
 
 or just use [[github:ELLIOTTCABLE/rbenv.plugin.zsh]]
 
-*** ASDF
+*** ASDF :ARCHIVE:
 I'm trying Elixir and Erlang and I found [[https://github.com/asdf-vm/asdf][GitHub - asdf-vm/asdf: Extendable
 version manager with support for Ruby, Node...]]. It might be worth checking into
 more plugins and use it instead of rbenv, nvm, pyenv etc.
@@ -667,19 +641,15 @@ asdf install elixir latest
 export ERL_AFLAGS="-kernel shell_history enabled"
 #+end_src
 
-*** Envkey
+** Guix package manager
 #+begin_src conf
-_envkey_yargs_completions()
-{
-  local reply
-  local si=$IFS
-  IFS=$'
-' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" ../../../bin/envkey --get-yargs-completions "${words[@]}"))
-  IFS=$si
-  _describe 'values' reply
-}
-compdef _envkey_yargs_completions envkey
+GUIX_PROFILE="$HOME/.config/guix/current"
+if [ -L "$GUIX_PROFILE" ]; then
+  . "$GUIX_PROFILE/etc/profile"
+  export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
+fi
 #+end_src
+
 * Using on different user@server
 I'm using many app users on different servers, when I want same ZSH config, it should be enough to do something like:
 
