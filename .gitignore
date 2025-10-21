@@ -2,3 +2,6 @@ ansible/*
 .#*
 bin/bootstrap_arch
 etc/yupfiles/*
+
+# generated from chezmoi for Guix consumation
+config.files/*
