@@ -21,7 +21,7 @@ you get even less of terminal space...
 
 Anyway no big deal, [[https://github.com/alacritty/alacritty/issues/5076][according to this issue]], you can simply set
 ~WINIT_X11_SCALE_FACTOR=1~ environment variable and it works as I want (same as
-/Termite/ before). I'm setting this in .xprofile.
+/Termite/ before).
 
 Looks like it works on Wayland without any issue.
 
