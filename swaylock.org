@@ -1,9 +1,10 @@
 #+title: Swaylock
-##+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/swaylock/config.tmpl
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes
+#+PROPERTY: header-args:conf+ :tangle ~/.local/share/chezmoi/private_dot_config/swaylock/config
 
 #+begin_src conf
 scaling=stretch
-image=~/.config/wallpaper.png
+image="~/Nextcloud/docs/wallpapers/lock.image"
 show-failed-attempts
 
 # velikost celého indikátoru
