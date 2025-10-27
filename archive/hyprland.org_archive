@@ -458,7 +458,7 @@ master {
 misc {
     disable_hyprland_logo = true
     disable_splash_rendering = true
-    disable_autoreload = false
+    disable_autoreload = true
 }
 
 plugin {
@@ -637,8 +637,7 @@ bind = $mainMod, u, exec, gopass --nosync ls --flat | rofi -dmenu -p 'User for:'
 bind = $mainMod, o, exec, gopass --nosync ls --flat otp | rofi -dmenu -p 'OTP for:' | xargs --no-run-if-empty gopass otp | sed 's/ .*//' | ydotool type --key-delay=10 --key-hold=10 --file=-
 
 # emoji
-bind = $mainMod SHIFT, E, exec, rofi -modi emoji -show emoji
-
+bind = $mainMod SHIFT, E, exec, rofi -modi emoji -show emoji -kb-secondary-copy "" -kb-custom-1 Ctrl+c
 
 # notification center
 # show hide
@@ -659,11 +658,14 @@ bind = $mainMod, x, resizeactive, exact 640 400
 bind = $mainMod SHIFT, C, exec, hyprpicker --autocopy --format=hex
 
 # I'm using alacritty as my main terminal
-bind = $mainMod SHIFT, RETURN, exec, alacritty
+# bind = $mainMod SHIFT, RETURN, exec, alacritty
+bind = $mainMod, RETURN, exec, alacritty
+
+bind = $mainMod, ESCAPE, exec, kitten quick-access-terminal
 
 # special workspace
-bind = $mainMod, escape, togglespecialworkspace
-bind = $mainMod SHIFT, escape, movetoworkspace, special
+# bind = $mainMod, escape, togglespecialworkspace
+# bind = $mainMod SHIFT, escape, movetoworkspace, special
 
 # lock screen
 bind = ,Print, exec, loginctl lock-session
