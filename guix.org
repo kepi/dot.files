@@ -1,0 +1,36 @@
+#+title: Guix
+#+PROPERTY: header-args:scheme :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/guix/channels.scm
+
+#+begin_src scheme
+(cons*
+        (channel
+                (name 'small-guix)
+                (url "https://codeberg.org/fishinthecalculator/small-guix.git")
+                (branch "main")
+                ;; Enable signature verification:
+                (introduction
+                (make-channel-introduction
+                "f260da13666cd41ae3202270784e61e062a3999c"
+                (openpgp-fingerprint
+                "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
+
+        (channel
+                (name 'emacs)
+                (url "https://github.com/garrgravarr/guix-emacs")
+                (introduction
+                (make-channel-introduction
+                    "d676ef5f94d2c1bd32f11f084d47dcb1a180fdd4"
+                    (openpgp-fingerprint
+                    "2DDF 9601 2828 6172 F10C  51A4 E80D 3600 684C 71BA"))))
+
+        (channel
+         (name 'nonguix)
+         (url "https://gitlab.com/nonguix/nonguix")
+         (introduction
+          (make-channel-introduction
+           "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+           (openpgp-fingerprint
+            "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+
+        %default-channels)
+#+end_src
