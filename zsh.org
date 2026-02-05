@@ -19,8 +19,6 @@ And this is last version of my config which is attemtp to use /Guix home/ for pa
 #+begin_src conf :tangle ~/.local/share/chezmoi/dot_aliases
 alias o='xdg-open'
 
-alias j='z'
-
 # my ip
 alias myip4='curl -4 ifconfig.co'
 alias myip6='curl -6 ifconfig.co'
@@ -68,6 +66,16 @@ alias rsync='noglob rsync'
 
 # ARCH linux aliasy
 alias rename="file-rename"
+
+# mise
+alias m="mise"
+alias mr="mise run"
+alias mrt="mise --env test run"
+alias mt="mise --env test"
+
+# guix
+alias ghr='guix home reconfigure ~/dev/kepi/dotfiles/guix/systems/home.scm'
+alias ghrp='guix pull && ghr'
 #+end_src
 
 And of course, load the aliases from =.zshrc=
@@ -270,6 +278,7 @@ setopt inc_append_history # zsh sessions will append their history list to the h
 
 This makes 1. and 2. working but not 3. With =share_history=, we would have 1. and 3. working but not 2.
 
+*** FZF history search
 For now, I decided to modify [[https://github.com/joshskidmore/zsh-fzf-history-search][zsh-fzf-history-search]] to directly parse current
 ~$HISTFILE~ and display with =fzf= every time I use =Ctrl+R=. Probably not as
 fast as using standard =fc= but working just as I want.
@@ -320,6 +329,7 @@ zle -N kepi_fzf_history_search
 bindkey $ZSH_FZF_HISTORY_SEARCH_BIND kepi_fzf_history_search
 #+end_src
 
+*** Extended history
 
 I also want to have additional info present. Writes the history file in the
 =:start:elapsed;command= format.
@@ -333,6 +343,7 @@ of =inc_append_history_time=. First one stores command to history immediately
 when you hit enter, but second one waits until command finishes. I don't usually
 need /elapsed/ info, so I don't care.
 
+*** History cleanup
 Next thing is to cleanup history a little. No immediate dups, reduce blanks etc.
 But, I intentionally want to store dups, just not display them. Same for
 commands started with blanks.
@@ -349,6 +360,7 @@ setopt hist_ignore_dups         # does not record an event that was just recorde
 setopt no_hist_beep             # don't beep when accessing non-existent history.
 #+end_src
 
+*** No immediate execution!
 And last, but not least, *never* execute immediately after history expansion.
 
 #+begin_src conf
@@ -473,7 +485,7 @@ Unfortunately, it has been discontinued last year. Fortunately [[https://github.
 
 *** Plugins
 :PROPERTIES:
-:header-args:conf: :tangle nil
+:header-args:conf: :tangle no
 :END:
 **** TODO Lazyload
 Small plugin allowing to lazy load some libraries when command is typed.
@@ -591,7 +603,8 @@ eval "$(nodenv init - --no-rehash zsh)"
 #+end_src
 
 I stopped using lazy loading for Nodenv as I need it to load before PNPM.
-
+*** Mise - polyglot tool version manager
+I switched to mise everywhere. Currently installed from extra/mise in arch
 *** PNPM
 #+begin_src conf
 export PNPM_HOME="/home/kepi/.local/share/pnpm"
