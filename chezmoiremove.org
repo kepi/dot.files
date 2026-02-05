@@ -1,16 +1,21 @@
 #+title: Chezmoiremove
-#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/.chezmoiremove.tmpl
+#+PROPERTY: header-args:conf :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/.chezmoiremove.tmpl
 
 This is for config (and other) files I'm no longer using and want to be rid of them.
 
 #+begin_src conf
+bin/hypr-switch-workspace
+bin/i3-switch-workspace
+bin/setlockbg
+.config/hypr
+.config/deadd
+.config/dunst
 .config/i3
 .config/sway
-.config/swayidle
-.config/swaylock
 .config/eww.yuck
+.config/xdg-desktop-portal/hyprland-portals.conf
 #+end_src
 
 #+begin_src sh
-yay -Rs sway swaylock swayidle i3status-rust-git
+yay -Rs sway i3status-rust-git
 #+end_src
