@@ -10,6 +10,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (gnu packages wm)
+  #:use-module (gnu packages)
   #:export (base-packages
             base-services
             %host-files-dir
@@ -267,3 +268,4 @@
      (packages (append base-packages extra-packages))
      (services (append (base-services host-files-dir)
                        extra-services)))))
+
