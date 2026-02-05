@@ -20,12 +20,17 @@
 ;; Pomocné funkce
 ;; ---------------------------------------------------------------
 
+;; Cesta k dotfiles repozitáři
+(define %dotfiles-dir
+  (string-append (getenv "HOME") "/dev/kepi/dotfiles"))
+
 ;; Cesta k host-specifickým souborům spravovaným chezmoi
 (define (%host-files-dir)
   (let ((dir (canonicalize-path
-              (string-append (getenv "HOME")
-                             "/dev/kepi/dotfiles/files/"
-                             (gethostname)))))
+              (string-append %dotfiles-dir "/files/" (gethostname)))))
+    ;; Nejdřív tangle org souborů, aby chezmoi měl aktuální konfiguraci
+    (system* (string-append %dotfiles-dir "/bin/tangle") %dotfiles-dir)
+    ;; Pak aplikuj chezmoi
     (system* "chezmoi" "apply" "--force" "--keep-going"
              "--destination" dir)
     dir))

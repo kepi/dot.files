@@ -1,0 +1,12 @@
+#+title: Kepi's Guix Configuration
+
+* Entrypoint
+🚪 =systems/home.scm= 
+
+#+begin_example sh
+alias ghr='guix home reconfigure ~/dev/kepi/dotfiles/guix/systems/home.scm'
+#+end_example
+
+It use current system hostname to find correct module.
+
+If you want to override, use =GUIX_SYSTEM=, i.e. ~GUIX_SYSTEM=midget ghr~
