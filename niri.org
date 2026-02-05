@@ -1,0 +1,824 @@
+#+title: Niri
+#+PROPERTY: header-args:yaml :comments link :tangle-mode (identity #o600) :mkdirp yes
+#+PROPERTY: header-args:sh :comments link :tangle-mode (identity #o600) :mkdirp yes
+#+PROPERTY: header-args:kdl :comments link :tangle-mode (identity #o600) :mkdirp yes
+#+PROPERTY: header-args:kdl+ :tangle ~/.local/share/chezmoi/private_dot_config/niri/config.kdl
+
+I decided it is time to move from Hyprland at the same time I started
+experimenting with /Guix Home/.
+
+It went quite well and it looks like I'm getting used to /scrollable tiling/
+idea. I'm still using named workspaces, as I found them really useful for my
+workflow, but I'm trying to combine them more with ad-hoc windows.
+
+So far only thing which is making this setup less then perfect is the fact that
+I'm using two 2k monitors in portrait mode and most application looks ridiculous
+with default 50 % size on them.
+
+* Config
+Configuration file is in [[https://kdl.dev][KDL format]], which is easy to used to. I especially love
+=/-= for block commenting.
+
+** Input device configuration
+Link to [[https://yalter.github.io/niri/Configuration:-Input][input documentation]].
+
+I made only necessary changes for my keyboard layout.
+
+I'll tweak rest later, I suppose I can make some nice adjustments for my
+Surface.
+
+#+begin_src kdl
+input {
+    disable-power-key-handling
+
+    keyboard {
+        xkb {
+            layout "cus_klaveska,us"
+            options "grp:menu_toggle,ralt_switch,terminate:ctrl_alt_bksp,grp_led:scroll,ctrl:nocaps"
+            model "pc104"
+        }
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+    }
+
+    mouse {
+    }
+
+    // Make the mouse warp to the center of newly focused windows.
+    warp-mouse-to-focus
+
+    // Focus windows and outputs automatically when moving the mouse into them.
+    // Setting max-scroll-amount="0%" makes it work only on windows already fully on screen.
+    focus-follows-mouse max-scroll-amount="0%"
+
+    // Niri will correctly switch to the workspace you came from, even if
+    // workspaces were reordered in the meantime.
+    workspace-auto-back-and-forth
+}
+#+end_src
+
+** TODO Environment variables
+
+FIXME: I'm not sure how (or if ever) it is possible to use variables like
+=XDG_RUNTIME_DIR= in environment vars values. So I hard coded this to my user
+for now. If Niri can't do this, I can change this file to Chezmoi template and
+use it probably.
+
+#+begin_src kdl
+environment {
+    // I'm using gpg agent as SSH agent
+    SSH_AUTH_SOCK "/run/user/1000/gnupg/S.gpg-agent.ssh"
+
+    // Just to get correct themes
+    QT_QPA_PLATFORMTHEME "qt6ct"
+
+    // Use wayland for electron apps
+    ELECTRON_OZONE_PLATFORM_HINT "wayland"
+}
+#+end_src
+
+** Outputs
+I'm setting outputs with [[./kanshi.org][Kanshi]].
+
+** Layout
+[[https://yalter.github.io/niri/Configuration:-Layout][docs]]
+
+Settings that influence how windows are positioned and sized.
+
+#+begin_src kdl
+layout {
+    // Set gaps around windows in logical pixels.
+    gaps 8
+
+    // When to center a column when changing focus, options are:
+    // - "never", default behavior, focusing an off-screen column will keep at the left
+    //   or right edge of the screen.
+    // - "always", the focused column will always be centered.
+    // - "on-overflow", focusing a column will center it if it doesn't fit
+    //   together with the previously focused column.
+    center-focused-column "never"
+
+    // You can customize the widths that "switch-preset-column-width" (Mod+R) toggles between.
+    preset-column-widths {
+        // Proportion sets the width as a fraction of the output width, taking gaps into account.
+        // For example, you can perfectly fit four windows sized "proportion 0.25" on an output.
+        // The default preset widths are 1/3, 1/2 and 2/3 of the output.
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+
+
+        // Fixed sets the width in logical pixels exactly.
+        // fixed 1920
+    }
+
+    // You can also customize the heights that "switch-preset-window-height" (Mod+Shift+R) toggles between.
+    // preset-window-heights { }
+
+    // You can change the default width of the new windows.
+    default-column-width { proportion 0.5; }
+    // If you leave the brackets empty, the windows themselves will decide their initial width.
+    // default-column-width {}
+
+    // By default focus ring and border are rendered as a solid background rectangle
+    // behind windows. That is, they will show up through semitransparent windows.
+    // This is because windows using client-side decorations can have an arbitrary shape.
+    //
+    // If you don't like that, you should uncomment `prefer-no-csd` below.
+    // Niri will draw focus ring and border *around* windows that agree to omit their
+    // client-side decorations.
+    //
+    // Alternatively, you can override it with a window rule called
+    // `draw-border-with-background`.
+
+    // You can change how the focus ring looks.
+    focus-ring {
+        // Uncomment this line to disable the focus ring.
+        // off
+
+        // How many logical pixels the ring extends out from the windows.
+        width 4
+
+        // Colors can be set in a variety of ways:
+        // - CSS named colors: "red"
+        // - RGB hex: "#rgb", "#rgba", "#rrggbb", "#rrggbbaa"
+        // - CSS-like notation: "rgb(255, 127, 0)", rgba(), hsl() and a few others.
+
+        // Color of the ring on the active monitor.
+        active-color "#7fc8ff"
+
+        // Color of the ring on inactive monitors.
+        //
+        // The focus ring only draws around the active window, so the only place
+        // where you can see its inactive-color is on other monitors.
+        inactive-color "#505050"
+
+        // You can also use gradients. They take precedence over solid colors.
+        // Gradients are rendered the same as CSS linear-gradient(angle, from, to).
+        // The angle is the same as in linear-gradient, and is optional,
+        // defaulting to 180 (top-to-bottom gradient).
+        // You can use any CSS linear-gradient tool on the web to set these up.
+        // Changing the color space is also supported, check the wiki for more info.
+        //
+        // active-gradient from="#80c8ff" to="#c7ff7f" angle=45
+
+        // You can also color the gradient relative to the entire view
+        // of the workspace, rather than relative to just the window itself.
+        // To do that, set relative-to="workspace-view".
+        //
+        // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
+    }
+
+    // You can also add a border. It's similar to the focus ring, but always visible.
+    border {
+        // The settings are the same as for the focus ring.
+        // If you enable the border, you probably want to disable the focus ring.
+        off
+
+        width 4
+        active-color "#ffc87f"
+        inactive-color "#505050"
+
+        // Color of the border around windows that request your attention.
+        urgent-color "#9b0000"
+
+        // Gradients can use a few different interpolation color spaces.
+        // For example, this is a pastel rainbow gradient via in="oklch longer hue".
+        //
+        // active-gradient from="#e5989b" to="#ffb4a2" angle=45 relative-to="workspace-view" in="oklch longer hue"
+
+        // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
+    }
+
+    // You can enable drop shadows for windows.
+    shadow {
+        // Uncomment the next line to enable shadows.
+        on
+
+        // By default, the shadow draws only around its window, and not behind it.
+        // Uncomment this setting to make the shadow draw behind its window.
+        //
+        // Note that niri has no way of knowing about the CSD window corner
+        // radius. It has to assume that windows have square corners, leading to
+        // shadow artifacts inside the CSD rounded corners. This setting fixes
+        // those artifacts.
+        //
+        // However, instead you may want to set prefer-no-csd and/or
+        // geometry-corner-radius. Then, niri will know the corner radius and
+        // draw the shadow correctly, without having to draw it behind the
+        // window. These will also remove client-side shadows if the window
+        // draws any.
+        //
+        // draw-behind-window true
+
+        // You can change how shadows look. The values below are in logical
+        // pixels and match the CSS box-shadow properties.
+
+        // Softness controls the shadow blur radius.
+        softness 30
+
+        // Spread expands the shadow.
+        spread 5
+
+        // Offset moves the shadow relative to the window.
+        offset x=0 y=5
+
+        // You can also change the shadow color and opacity.
+        color "#0007"
+    }
+
+    // Struts shrink the area occupied by windows, similarly to layer-shell panels.
+    // You can think of them as a kind of outer gaps. They are set in logical pixels.
+    // Left and right struts will cause the next window to the side to always be visible.
+    // Top and bottom struts will simply add outer gaps in addition to the area occupied by
+    // layer-shell panels and regular gaps.
+    struts {
+        // left 64
+        // right 4
+        // top 64
+        // bottom 64
+    }
+}
+#+end_src
+
+** Autostart
+Niri running as sessions supports =xdg-desktop-autostart= but I'm planning to
+use /Guix Home/ services later, so this is good for now.
+
+#+begin_src kdl
+spawn-at-startup "wpaperd"
+
+spawn-at-startup "swayidle" "-w" "timeout" "300" "swaylock -f" "timeout" "600" "niri msg action power-off-monitors' resume 'niri msg action power-on-monitors" "before-sleep" "swaylock -f"
+
+spawn-at-startup "swaync"
+spawn-at-startup "waybar"
+spawn-at-startup "kanshi"
+spawn-at-startup "seafile-applet"
+spawn-at-startup "nextcloud"
+spawn-at-startup "nm-applet"
+spawn-at-startup "/usr/lib/kdeconnectd"
+spawn-at-startup "/usr/lib/polkit-kde-authentication-agent-1"
+spawn-at-startup "corectrl"
+#+end_src
+
+*** Update DBUS env :ARCHIVE:
+Update DBUS env - not sure if it is needed.
+
+Update: at least [[https://github.com/YaLTeR/niri/issues/254#issuecomment-2339715153][according to this]] this shouldn't be needed. Archiving.
+
+#+begin_src kdl
+spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+#+end_src
+
+** No client side decorations
+Uncomment this line to ask the clients to omit their client-side decorations if
+possible. If the client will specifically ask for CSD, the request will be
+honored.
+
+Additionally, clients will be informed that they are tiled, removing some
+client-side rounded corners. This option will also fix border/focus ring drawing
+behind some semitransparent windows.
+
+After enabling or disabling this, you need to restart the apps for this to take
+effect.
+
+#+begin_src kdl
+prefer-no-csd
+#+end_src
+
+** Screenshots
+You can change the path where screenshots are saved. A ~ at the front will be
+expanded to the home directory.
+
+The path is formatted with strftime(3) to give you the screenshot date and time.
+
+#+begin_src kdl
+screenshot-path "~/Nextcloud/docs/screenshots/screenshot_%Y-%m-%d %H-%M-%S.png"
+#+end_src
+
+** Workspaces
+#+begin_src kdl
+// Named workspaces
+workspace "shop" {
+    open-on-output "ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079"
+}
+
+workspace "term" {
+    open-on-output "ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079"
+}
+
+workspace "org" {
+    open-on-output "ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079"
+}
+
+workspace "code" {
+    open-on-output "ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079"
+}
+
+workspace "work" {
+    open-on-output "Dell Inc. DELL P2723DE G1MP1L3"
+}
+
+workspace "learn" {
+    open-on-output "Dell Inc. DELL P2723DE G1MP1L3"
+}
+
+workspace "video" {
+    open-on-output "Dell Inc. DELL P2723DE B1MP1L3"
+}
+
+workspace "slop" {
+    open-on-output "Dell Inc. DELL P2723DE B1MP1L3"
+}
+
+workspace "chat" {
+    open-on-output "Dell Inc. DELL P2723DE B1MP1L3"
+}
+workspace "ansible" {
+    open-on-output "Dell Inc. DELL P2723DE B1MP1L3"
+}
+
+workspace "gamesy" {
+    // TODO comming in next niri version
+    // layout {
+    //     gaps 0
+    //     default-column-width { proportion 1.0; }
+    // }
+}
+#+end_src
+
+** Window rules
+#+begin_src kdl
+
+// Window rules let you adjust behavior for individual windows.
+// Find more information on the wiki:
+// https://yalter.github.io/niri/Configuration:-Window-Rules
+
+// Work around WezTerm's initial configure bug
+// by setting an empty default-column-width.
+window-rule {
+    // This regular expression is intentionally made as specific as possible,
+    // since this is the default config, and we want no false positives.
+    // You can get away with just app-id="wezterm" if you want.
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    default-column-width {}
+}
+
+window-rule {
+    match app-id=r#"(qutebrowser)$"#
+    match app-id="gimp"
+    default-column-width { proportion 1.0; }
+}
+
+window-rule {
+    match app-id="Element"
+    default-column-width { fixed 1424; }
+}
+
+// left monitor
+window-rule {
+    match title=r#"- qb\[1\]$"#
+
+    open-on-workspace "work"
+}
+
+// middle monitor
+window-rule {
+    match title=r#"- qb\[0\]$"#
+
+    open-on-workspace "shop"
+}
+
+// right monitor
+window-rule {
+    match title=r#"- qb\[2\]$"#
+    match app-id=r#"librewolf$"#
+    match app-id=r#"firefox$"#
+
+    default-column-width { proportion 1.0; }
+    open-on-workspace "video"
+}
+
+// Open the Firefox picture-in-picture player as floating by default.
+window-rule {
+    // This app-id regular expression will work for both:
+    // - host Firefox (app-id is "firefox")
+    // - Flatpak Firefox (app-id is "org.mozilla.firefox")
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// (This example rule is commented out with a "/-" in front.)
+window-rule {
+    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+    match app-id=r#"^org\.gnome\.World\.Secrets$"#
+
+    block-out-from "screen-capture"
+
+    // Use this instead if you want them visible on third-party screenshot tools.
+    // block-out-from "screencast"
+}
+
+window-rule {
+    match app-id=r#"qalculate"#
+    open-floating true
+}
+
+window-rule {
+    match app-id="thunar"
+
+    opacity 0.9
+}
+
+window-rule {
+    match app-id="Emacs"
+
+    opacity 0.97
+}
+
+// Example: enable rounded corners for all windows.
+// (This example rule is commented out with a "/-" in front.)
+/-window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+}
+#+end_src
+
+** Layer rules
+#+begin_src kdl
+layer-rule {
+    match namespace="waybar"
+
+    block-out-from "screen-capture"
+
+    geometry-corner-radius 12
+    place-within-backdrop false
+}
+
+// Make fuzzel semitransparent.
+layer-rule {
+    match namespace="^launcher$"
+
+    shadow {
+        on
+    }
+
+    geometry-corner-radius 10
+
+    opacity 0.9
+}
+
+
+layer-rule {
+    match namespace="swaync-control-center"
+    opacity 0.9
+}
+
+// Put swaybg inside the overview backdrop.
+layer-rule {
+    match namespace="^wallpaper$"
+
+    place-within-backdrop true
+}
+#+end_src
+
+** Hotkey overlay
+I'm used to my key bindings and I don't need to show them on each startup. I can
+always display them with =Mod + ?= which is intuitive enough.
+
+#+begin_src kdl
+hotkey-overlay {
+    skip-at-startup
+}
+#+end_src
+
+** Key bindings
+#+begin_src kdl
+binds {
+    // Keys consist of modifiers separated by + signs, followed by an XKB key name
+    // in the end. To find an XKB name for a particular key, you may use a program
+    // like wev.
+    //
+    // "Mod" is a special modifier equal to Super when running on a TTY, and to Alt
+    // when running as a winit window.
+    //
+    // Most actions that you can bind here can also be invoked programmatically with
+    // `niri msg action do-something`.
+
+    // Mod-Shift-/, which is usually the same as Mod-?,
+    // shows a list of important hotkeys.
+    Mod+Shift+Slash { show-hotkey-overlay; }
+
+    // Mod+I { spawn-sh "niri msg -j workspaces | jq -r '.[] | .name' | rofi -dmenu -p 'Workspace:'  | xargs -r ~/bin/hypr-switch-workspace"; }
+
+    // Suggested binds for running programs: terminal, app launcher, screen locker.
+    Mod+Return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
+    Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
+
+    Mod+S hotkey-overlay-title="Run an Application: rofi" { spawn "rofi" "-normal-window" "-show" "ssh"; }
+
+    Mod+E hotkey-overlay-title="Execute menu" { spawn "wlr-which-key" "--initial-keys" "e"; }
+    Mod+P hotkey-overlay-title="Password menu" { spawn "wlr-which-key" "--initial-keys" "p"; }
+
+    // Quick term access - Kitten doesn't allow scratchpad yet and this works fine
+    Mod+Escape { spawn "kitten" "quick-access-terminal"; }
+
+    // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
+    // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
+    // For example, this is a standard bind to toggle the screen reader (orca).
+    // Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
+
+    // Example volume keys mappings for PipeWire & WirePlumber.
+    // The allow-when-locked=true property makes them work even when the session is locked.
+    // Using spawn-sh allows to pass multiple arguments together with the command.
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+
+    // Example brightness key mappings for brightnessctl.
+    // You can use regular spawn with multiple arguments too (to avoid going through "sh"),
+    // but you need to manually put each argument in separate "" quotes.
+    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+
+    // Open/close the Overview: a zoomed-out view of workspaces and windows.
+    // You can also move the mouse into the top-left hot corner,
+    // or do a four-finger swipe up on a touchpad.
+    Mod+O repeat=false { toggle-overview; }
+
+    Mod+Shift+Q repeat=false { close-window; }
+
+    // Mod+J     { focus-window-down; }
+    // Mod+K     { focus-window-up; }
+    // Mod+Alt+J     { move-window-down; }
+    // Mod+Alt+K     { move-window-up; }
+
+    Mod+H     { focus-column-left; }
+    Mod+L     { focus-column-right; }
+
+    Mod+J     { focus-window-or-workspace-down; }
+    Mod+K     { focus-window-or-workspace-up; }
+
+    Mod+Alt+H     { move-column-left; }
+    Mod+Alt+L     { move-column-right; }
+
+    Mod+Alt+J     { move-window-down-or-to-workspace-down; }
+    Mod+Alt+K     { move-window-up-or-to-workspace-up; }
+
+    Mod+Ctrl+J  { move-workspace-down; }
+    Mod+Ctrl+K  { move-workspace-up; }
+
+    Mod+Ctrl+H  { move-workspace-to-monitor-left; }
+    Mod+Ctrl+L  { move-workspace-to-monitor-right; }
+
+    // Mod+Home { focus-column-first; }
+    // Mod+End  { focus-column-last; }
+    // Mod+Ctrl+Home { move-column-to-first; }
+    // Mod+Ctrl+End  { move-column-to-last; }
+
+    Mod+A     { focus-monitor-left; }
+    // Mod+Shift+J     { focus-monitor-down; }
+    // Mod+Shift+K     { focus-monitor-up; }
+    Mod+semicolon    { focus-monitor-right; }
+
+    Mod+Shift+H     { move-column-to-monitor-left; }
+    Mod+Shift+J     { move-column-to-monitor-down; }
+    Mod+Shift+K     { move-column-to-monitor-up; }
+    Mod+Shift+L     { move-column-to-monitor-right; }
+
+    // Alternatively, there are commands to move just a single window:
+    // Mod+Shift+Ctrl+Left  { move-window-to-monitor-left; }
+
+    Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
+    Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
+    Mod+Ctrl+U         { move-column-to-workspace-down; }
+    Mod+Ctrl+I         { move-column-to-workspace-up; }
+
+    Mod+1 { focus-workspace "work"; }
+    Mod+2 { focus-workspace "term"; }
+    Mod+3 { focus-workspace "org"; }
+    Mod+4 { focus-workspace "code"; }
+    Mod+5 { focus-workspace "chat"; }
+    Mod+6 { focus-workspace "shop"; }
+    Mod+7 { focus-workspace "learn"; }
+    Mod+8 { focus-workspace "slop"; }
+    Mod+9 { focus-workspace "video"; }
+    Mod+0 { focus-workspace "gamesy"; }
+    Mod+Backslash { focus-workspace "ansible"; }
+    Mod+Alt+1 { move-column-to-workspace "work"; }
+    Mod+Alt+2 { move-column-to-workspace "term"; }
+    Mod+Alt+3 { move-column-to-workspace "org"; }
+    Mod+Alt+4 { move-column-to-workspace "code"; }
+    Mod+Alt+5 { move-column-to-workspace "chat"; }
+    Mod+Alt+6 { move-column-to-workspace "shop"; }
+    Mod+Alt+7 { move-column-to-workspace "learn"; }
+    Mod+Alt+8 { move-column-to-workspace "slop"; }
+    Mod+Alt+9 { move-column-to-workspace "video"; }
+    Mod+Alt+0 { move-column-to-workspace "gamesy"; }
+    Mod+Alt+Backslash { move-column-to-workspace "ansible"; }
+
+    Mod+Slash hotkey-overlay-title="Find window" { spawn "rofi" "-show" "window"; }
+
+    // The following binds move the focused window in and out of a column.
+    // If the window is alone, they will consume it into the nearby column to the side.
+    // If the window is already in a column, they will expel it out.
+    Mod+BracketLeft  { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+
+    // Consume one window from the right to the bottom of the focused column.
+    Mod+Comma  { consume-window-into-column; }
+    // Expel the bottom window from the focused column to the right.
+    Mod+Period { expel-window-from-column; }
+
+    Mod+R { switch-preset-column-width; }
+
+    // Cycling through the presets in reverse order is also possible.
+    // Mod+R { switch-preset-column-width-back; }
+    Mod+Shift+R { switch-preset-window-height; }
+    Mod+Ctrl+R { reset-window-height; }
+    Mod+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+
+    // Expand the focused column to space not taken up by other fully visible columns.
+    // Makes the column "fill the rest of the space".
+    Mod+Ctrl+F { expand-column-to-available-width; }
+
+    Mod+C { center-column; }
+
+    // Center all fully visible columns on screen.
+    Mod+Ctrl+C { center-visible-columns; }
+
+    // Finer width adjustments.
+    // This command can also:
+    // * set width in pixels: "1000"
+    // * adjust width in pixels: "-5" or "+5"
+    // * set width as a percentage of screen width: "25%"
+    // * adjust width as a percentage of screen width: "-10%" or "+10%"
+    // Pixel sizes use logical, or scaled, pixels. I.e. on an output with scale 2.0,
+    // set-column-width "100" will make the column occupy 200 physical screen pixels.
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+
+    // Finer height adjustments when in column with other windows.
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+
+    // Move the focused window between the floating and the tiling layout.
+    Mod+T       { toggle-window-floating; }
+    Mod+Shift+T { switch-focus-between-floating-and-tiling; }
+
+    // Toggle tabbed column display mode.
+    // Windows in this column will appear as vertical tabs,
+    // rather than stacked on top of each other.
+    Mod+W { toggle-column-tabbed-display; }
+
+    // Actions to switch layouts.
+    // Note: if you uncomment these, make sure you do NOT have
+    // a matching layout switch hotkey configured in xkb options above.
+    // Having both at once on the same hotkey will break the switching,
+    // since it will switch twice upon pressing the hotkey (once by xkb, once by niri).
+    // Mod+Space       { switch-layout "next"; }
+    // Mod+Shift+Space { switch-layout "prev"; }
+
+    Mod+Q { spawn "qalculate-gtk"; }
+
+    Mod+M hotkey-overlay-title="Toggle Mic" { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+    Mod+Shift+N hotkey-overlay-title="Next wallpaper" { spawn "wpaperctl" "next"; }
+
+    Mod+N hotkey-overlay-title="Notification center" { spawn "swaync-client" "-t"; }
+
+    Print hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock" "--image" "~/Nextcloud/docs/wallpapers/lock.image"; }
+    Mod+Alt+S { screenshot; }
+    //Mod+Alt+S { screenshot-screen; }
+    Mod+Alt+W { screenshot-window; }
+
+    // Applications such as remote-desktop clients and software KVM switches may
+    // request that niri stops processing the keyboard shortcuts defined here
+    // so they may, for example, forward the key presses as-is to a remote machine.
+    // It's a good idea to bind an escape hatch to toggle the inhibitor,
+    // so a buggy application can't hold your session hostage.
+    //
+    // The allow-inhibiting=false property can be applied to other binds as well,
+    // which ensures niri always processes them, even when an inhibitor is active.
+    Mod+Shift+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+
+
+    // emoji
+    Mod+Shift+E { spawn "rofi" "-modi" "emoji" "-show" "emoji" "-kb-secondary-copy" "" "-kb-custom-1" "Ctrl+c"; }
+
+    // The quit action will show a confirmation dialog to avoid accidental exits.
+    Mod+Alt+Shift+E { quit; }
+    // Ctrl+Alt+Delete { quit; }
+
+    // Powers off the monitors. To turn them back on, do any input like
+    // moving the mouse or pressing any other key.
+    Mod+Alt+P { power-off-monitors; }
+}
+#+end_src
+
+* Start niri at login
+I'm not sure how to easily start Niri installed in user space from ie sddm, so
+I'm starting it simply on login to first tty.
+
+I might to change this later on my Tablet, as I'm not sure if I can have virtual
+keyboard in terminal when I detach physical one.
+
+#+begin_src sh :tangle ~/.local/share/chezmoi/private_dot_config/zsh/dot_zlogin
+[[ -z $DISPLAY && $XDG_VTNR -eq 1 && $TTY == "/dev/tty1" ]] && exec niri --session
+#+end_src
+
+#+RESULTS:
+
+* Portal settings
+#+begin_src conf :tangle ~/.local/share/chezmoi/private_dot_config/xdg-desktop-portal/portals.conf
+[preferred]
+default=gtk
+#+end_src
+
+* wlr-which-key
+Niri doesn't support binding /submaps/ (groups) [[https://github.com/YaLTeR/niri/issues/846][yet]] but in that thread I found
+out there is special Wayland utility which does exactly that.
+
+It isn't packaged for Guix so I add it from AUR for now.
+
+I have to say that I'm impressed, this is cleaner to use and looks great. Only
+downside is that you have yet another tool to install and configure, but IMHO it
+is worth it to have it separate from compositor.
+
+#+begin_src yaml :tangle ~/.local/share/chezmoi/private_dot_config/wlr-which-key/config.yaml
+---
+# Theming
+font: JetBrainsMono Nerd Font 12
+background: "#282828d0"
+color: "#fbf1c7"
+border: "#8ec07c"
+separator: " ➜ "
+border_width: 2
+corner_r: 10
+padding: 15 # Defaults to corner_r
+rows_per_column: 5 # No limit by default
+column_padding: 25 # Defaults to padding
+
+# Anchor and margin
+anchor: center # One of center, left, right, top, bottom, bottom-left, top-left, etc.
+# Only relevant when anchor is not center
+margin_right: 0
+margin_bottom: 0
+margin_left: 0
+margin_top: 0
+
+# Permits key bindings that conflict with compositor key bindings.
+# Default is `false`.
+inhibit_compositor_keyboard_shortcuts: true
+
+# Try to guess the correct keyboard layout to use. Default is `false`.
+auto_kbd_layout: true
+
+menu:
+  - key: "e"
+    desc: "Exec"
+    submenu:
+      - key: "t"
+        desc: "Thunar"
+        cmd: thunar
+      - key: "p"
+        desc: Power
+        submenu:
+          - key: "s"
+            desc: Suspend
+            cmd: systemctl suspend
+          - key: "r"
+            desc: Reboot
+            cmd: reboot
+          - key: "o"
+            desc: Off
+            cmd: poweroff
+  - key: "p"
+    desc: "Passwords"
+    submenu:
+      - key: "p"
+        desc: "Type password"
+        cmd: gopass --nosync ls --flat | rofi -dmenu -p "Password for:" | xargs --no-run-if-empty gopass show -o | wtype -d 10 -
+      - key: "o"
+        desc: "Type OTP"
+        cmd: gopass --nosync ls --flat otp | rofi -dmenu -p "OTP for:" | xargs --no-run-if-empty gopass otp | sed 's/ .*//' | wtype -d 10 -
+      - key: "u"
+        desc: "Type user"
+        cmd: gopass --nosync ls --flat | rofi -dmenu -p "User for:" | xargs -I "{}" --no-run-if-empty gopass show {} user | wtype -d 10 -
+      - key: "c"
+        desc: "Copy password"
+        cmd: gopass --nosync ls --flat | rofi -dmenu -p "Password for:" | xargs --no-run-if-empty gopass show -c
+      - key: "g"
+        desc: "Generate some passwords"
+        cmd: gopass pwgen --one-per-line 64 | rofi -dmenu -p "Select password:" | xargs --no-run-if-empty wl-copy
+      - key: "x"
+        desc: "Generate 6-words password"
+        cmd: gopass pwgen --xkcd --sep " " --lang en 6 | rofi -dmenu -p "Select password:" | xargs --no-run-if-empty wl-copy
+      - key: "s"
+        desc: "Generate 4-words id-like passwords"
+        cmd: gopass pwgen --xkcd --sep "-" --lang en 4 | rofi -dmenu -p "Select password:" | xargs --no-run-if-empty wl-copy
+#+end_src

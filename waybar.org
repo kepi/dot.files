@@ -10,9 +10,9 @@
     "layer": "top",
     "height": 36,
     "modules-left": [
-        "hyprland/workspaces"
+        "niri/workspaces"
     ],
-    "modules-center": ["hyprland/window"],
+    "modules-center": ["niri/window"],
     "modules-right": [
         "custom/clocked-in",
         "clock#date",
@@ -54,26 +54,23 @@
         "on-click": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",
         "ignored-sinks": ["Easy Effects Sink"]
     },
-    "hyprland/window": {
+    "niri/window": {
         "max-length": 100,
         "separate-outputs": true,
         "icon": true,
     },
-    "hyprland/workspaces": {
-        "format": "{name}: {icon}",
-        "on-click": "activate",
-        "on-scroll-up": "hyprctl dispatch workspace e+1",
-        "on-scroll-down": "hyprctl dispatch workspace e-1",
-        "format-icons": {
-            "1": "",
-            "2": "",
-            "3": "",
-            "4": "",
-            "5": "",
-            "urgent": "",
-            "active": "",
-            "default": ""
-        },
+    "niri/workspaces": {
+        // "format": "{name}: {icon}",
+        // "format-icons": {
+        //     "1": "",
+        //     "2": "",
+        //     "3": "",
+        //     "4": "",
+        //     "5": "",
+        //     "urgent": "",
+        //     "active": "",
+        //     "default": ""
+        // },
         "sort-by-number": true,
         "all-outputs": false
     },
@@ -183,7 +180,7 @@
     },
     "custom/podpora": {
         "format": " {text}",
-        "interval": 10,
+        "interval": 60,
         "hide-empty-text": true,
         "return-type": "json",
         "exec": "$HOME/bin/waybar-custom-redmine 'https://projects.igloonet.cz/projects/hosting/issues.json?query_id=529'",
@@ -191,7 +188,7 @@
     },
     "custom/platby": {
         "format": " {text}",
-        "interval": 10,
+        "interval": 60,
         "hide-empty-text": true,
         "return-type": "json",
         "exec": "$HOME/bin/waybar-custom-redmine 'https://projects.igloonet.cz/projects/hosting-platby/issues.json?query_id=528'",
@@ -237,25 +234,20 @@ tooltip {
 }
 
 #workspaces button.active {
-  color: #a6adc8;
+  color: gray;
 }
 
 #workspaces button.focused {
-  color: #a6adc8;
-  background: #eba0ac;
-  border-radius: 20px;
+  color: white;
 }
 
 #workspaces button.urgent {
-  color: #11111b;
-  background: #a6e3a1;
-  border-radius: 20px;
+  color: #a6e3a1;
 }
 
 #workspaces button:hover {
-  background: #11111b;
-  color: #cdd6f4;
-  border-radius: 20px;
+  color: #f9e2af;
+  background: transparent;
 }
 
 #tray,
@@ -279,9 +271,17 @@ tooltip {
 }
 
 #window {
+  padding: 0px 10px;
+  background: #0D242C;
+  color: #FDF6E3;
+  opacity: 0.8;
   border-radius: 20px;
   margin-left: 5px;
   margin-right: 5px;
+}
+
+window#waybar.empty #window {
+    background: transparent;
 }
 
 /* padding fix */

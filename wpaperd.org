@@ -1,0 +1,47 @@
+#+title: Wpaperd
+#+PROPERTY: header-args:conf :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/wpaperd/config.toml.tmpl
+
+#+begin_quote
+[[https://github.com/danyspin97/wpaperd][wpaperd]] is the modern wallpaper daemon for Wayland. It dynamically changes the
+current wallpaper, either after a certain amount of time or via a command-line
+interface. It uses OpenGL ES to render the images and have beautiful
+hardware-accelerated transitions, while being easy on resources.
+#+end_quote
+
+When switching to /Niri/, i realized I'll have to use some wallpaper tool.
+Swaybg would work fine, but why not try something little fancier?
+
+* Output configuration
+#+begin_src conf
+[default]
+duration = "5m"
+
+[any]
+path = "{{ .chezmoi.homeDir }}/Nextcloud/docs/wallpapers/2560x1440"
+
+# ["Dell Inc. DELL P2723DE G1MP1L3"]
+# ["re:G1MP1L3"]
+[DP-5]
+duration = "30m"
+path = "{{ .chezmoi.homeDir }}/Nextcloud/docs/wallpapers/1440x2560"
+
+# ["ASUSTek COMPUTER INC ROG XG27AQ M1LMQS010079"]
+# ["re:M1LMQS010079"]
+[DP-1]
+duration = "30m"
+path = "{{ .chezmoi.homeDir }}/Nextcloud/docs/wallpapers/2560x1440"
+
+# ["Dell Inc. DELL P2723DE B1MP1L3"]
+# ["re:B1MP1L3"]
+[DP-4]
+duration = "30m"
+path = "{{ .chezmoi.homeDir }}/Nextcloud/docs/wallpapers/1440x2560"
+
+[eDP-1]
+duration = "30m"
+path = "{{ .chezmoi.homeDir }}/Nextcloud/docs/wallpapers/2880x1920"
+#+end_src
+
+* TODO Not working as I need yet
+- description doesn't work on Niri (I opened https://github.com/danyspin97/wpaperd/issues/155)
+- [X] default isn't fallback probably, which is weird. (FIXED - [any] do this)
