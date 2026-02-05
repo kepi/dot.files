@@ -3,5 +3,8 @@ ansible/*
 bin/bootstrap_arch
 etc/yupfiles/*
 
+# tangling checksums
+.tangle-checksums.*
+
 # generated from chezmoi for Guix consumation
 files/*

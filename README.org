@@ -61,14 +61,6 @@ check first.
 
 Beware it will tangle files to [[https://www.chezmoi.io/docs/quick-start/][Chezmoi]] directory
 
-#+begin_src sh :shebang :tangle bin/tangle :tangle-mode (identity #o755) :mkdirp yes
-find . -type f -name '*.org' -exec emacs --batch -l org --eval '(org-babel-tangle-file "{}")' \;
-#+end_src
-
-** TODO tangle hook?
-It would be great to have git hook to tangle all files into subdirectory so I
-can consume it without emacs installed.
-
 * TODO Install apps
 I should be able to install used apps for every part (zsh, git, etc) from
 Pacman, AUR or manually. It would be great to add support for [[https://chocolatey.org/][Chocolatey]] later

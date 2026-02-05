@@ -1,1 +1,67 @@
-find . -type f -name '*.org' -exec emacs --batch -l org --eval '(org-babel-tangle-file "{}")' \;
+#!/bin/bash
+# Tangle org files in one emacs process
+# Usage: tangle [directory] [--all]
+# Without --all, only tangles files changed since last tangle
+
+DIR="$(cd "${1:-.}" && pwd)"
+FORCE_ALL="${2:-}"
+CHECKSUM_FILE="$DIR/.tangle-checksums.${HOSTNAME}"
+
+cd "$DIR" || exit 1
+
+# Get list of org files to tangle
+get_files_to_tangle() {
+    if [[ "$FORCE_ALL" == "--all" ]] || [[ ! -f "$CHECKSUM_FILE" ]]; then
+        # First run or forced - tangle all
+        ls -1 *.org 2>/dev/null | grep -v '^\.'
+    else
+        # Only changed files (compare checksums)
+        for f in *.org; do
+            [[ -f "$f" ]] || continue
+            [[ "$f" == .* ]] && continue
+
+            current_sum=$(md5sum "$f" | cut -d' ' -f1)
+            stored_sum=$(grep "^$f:" "$CHECKSUM_FILE" 2>/dev/null | cut -d: -f2)
+
+            if [[ "$current_sum" != "$stored_sum" ]]; then
+                echo "$f"
+            fi
+        done
+    fi
+}
+
+# Save checksums after successful tangle
+save_checksums() {
+    : >"$CHECKSUM_FILE"
+    for f in *.org; do
+        [[ -f "$f" ]] || continue
+        [[ "$f" == .* ]] && continue
+        echo "$f:$(md5sum "$f" | cut -d' ' -f1)" >>"$CHECKSUM_FILE"
+    done
+}
+
+FILES=$(get_files_to_tangle)
+
+if [[ -z "$FILES" ]]; then
+    echo "No org files changed since last tangle."
+    exit 0
+fi
+
+echo "Tangling: $FILES" | tr '\n' ' '
+echo
+
+# Convert to elisp list
+ELISP_FILES=$(echo "$FILES" | while read -r f; do
+    echo "\"$DIR/$f\""
+done | tr '\n' ' ')
+
+emacs --batch -l org --eval "
+(progn
+  (setq-default comment-start \"# \")
+  (setq-default comment-end \"\")
+  (setq python-indent-offset 4)
+  (add-hook 'conf-mode-hook
+    (lambda () (setq comment-start \"# \" comment-end \"\")))
+  (dolist (file (list $ELISP_FILES))
+    (org-babel-tangle-file file)))
+" && save_checksums
