@@ -1,0 +1,29 @@
+#+title: Podman
+#+PROPERTY: header-args:conf :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/containers/storage.conf.tmpl
+
+As I'm slowly moving to ZFS root, let's use it for containers too.
+
+* Create ZFS filesystems
+For rootless podman setting =acltype= is crucial, otherwise many things will be broken.
+
+You can find some more information in [[https://www.reddit.com/r/podman/comments/1462rl4/possible_to_run_rootless_with_storage_on_zfs/][Possible to run rootless with storage on
+ZFS?]], [[https://www.folliehiyuki.com/blog/rootfull-rootless-containers-on-btrfs-zfs/][Rootfull, rootless containers on Btrfs and ZFS | folliehiyuki's blog]] and
+[[https://blog.dest-unreach.be/2024/01/03/podman-on-zfs/][Long-term Memory – Podman on ZFS]].
+
+#+begin_example sh
+sudo zfs create -o mountpoint=none rpool/containers
+sudo zfs create -o acltype=posixacl -o xattr=on -o mountpoint=/home/kepi/.local/share/containers/storage rpool/containers/kepi
+~/.local/share/chezmoi/dot_zshrc.tmpl
+#+end_example
+
+* Config
+#+begin_src conf
+[storage]
+  driver = "overlay"
+
+#[storage.options.overlay]
+  #force_mask = "private"
+  # mount_program = "{{ .chezmoi.homeDir }}/.guix-home/profile/bin/fuse-overlayfs"
+  #mount_program = "/usr/bin/fuse-overlayfs"
+  #mountopt = "nodev"
+#+end_src
