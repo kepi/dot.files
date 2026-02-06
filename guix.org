@@ -1,6 +1,10 @@
 #+title: Guix
 #+PROPERTY: header-args:scheme :comments link :tangle-mode (identity #o600) :mkdirp yes :tangle ~/.local/share/chezmoi/private_dot_config/guix/channels.scm
 
+More info in [[./guix/README.org]]
+
+* Channels
+
 #+begin_src scheme
 (cons*
         (channel

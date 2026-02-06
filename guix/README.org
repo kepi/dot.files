@@ -1,5 +1,21 @@
 #+title: Kepi's Guix Configuration
 
+This is heavy in-progress configuration of my Guix Home. Ultimate goal is to
+move to full Guix System, but first I need to have everything I depend on ready.
+
+Main blocker for me is now ZFS on root with encryption, which I simply want.
+Fortunately there is a lot of progress there (mostly unofficial) and it is maybe
+even possible now.
+
+* Inspiration
+I'm complete Guile & Guix noob and I take most of things I discover from other
+people's configurations and blogs.
+
+- [[https://systemcrafters.net/craft-your-system-with-guix/how-to-organize-your-config/][How to Organize Your Guix Configuration - System Crafters]] :: basic idea of config organization. Article is little outdated 
+- [[https://github.com/daviwil/dotfiles][GitHub - daviwil/dotfiles: {MIRROR} The path to GNUrvana]] :: David Wilson (aka The System Crafter) config files
+- [[https://github.com/aurtzy/guix-config/tree/master][GitHub - aurtzy/guix-config: Personal dotfiles/guix configuration]] :: modular configuration, flatpak service
+- [[https://github.com/hiecaq/guix-config][GitHub - hiecaq/guix-config: My literate configuration for Guix]] :: I would of course like to move to literate configuration later, so I'll leave this here for later.
+
 * Entrypoint
 🚪 =systems/home.scm= 
 
