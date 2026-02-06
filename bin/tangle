@@ -62,6 +62,8 @@ emacs --batch -l org --eval "
   (setq python-indent-offset 4)
   (add-hook 'conf-mode-hook
     (lambda () (setq comment-start \"# \" comment-end \"\")))
+  (add-to-list 'org-src-lang-modes '(\"kdl\" . js))
+  (add-to-list 'org-src-lang-modes '(\"jsonc\" . js))
   (dolist (file (list $ELISP_FILES))
     (org-babel-tangle-file file)))
 " && save_checksums
